@@ -161,7 +161,7 @@ function initUser() {
                                         console.log(`[Migration] カレンダー ${cal.name || calId} のID移行完了`);
                                     }
                                 } catch (calErr) {
-                                    console.warn(`[Migration] カレンダー ${calId} の移行スキップ:`, calErr);
+                                    console.warn('[Migration] カレンダーの移行スキップ:', calId, calErr);
                                 }
                             }
                             // localStorageのIDを新UIDに更新（次回以降移行をスキップ）
@@ -362,7 +362,7 @@ async function deleteAccount() {
                     console.log(`[DeleteAccount] カレンダー "${cal.name}" から自分のデータを削除`);
                 }
             } catch (e) {
-                console.error(`[DeleteAccount] カレンダー ${calId} の処理エラー:`, e);
+                console.error('[DeleteAccount] カレンダーの処理エラー:', calId, e);
             }
         }
 
@@ -5042,7 +5042,7 @@ async function _applyGCalNGToCalendars(ngData) {
                 await saveCalendarToFirestore(cal);
                 console.log(`[GCal] カレンダー「${cal.name}」にNG設定を登録`);
             } catch (e) {
-                console.error(`[GCal] カレンダー「${cal.name}」の保存エラー:`, e);
+                console.error('[GCal] カレンダーの保存エラー:', cal.name, e);
             }
         }
     }
