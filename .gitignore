@@ -1,0 +1,27 @@
+# ローカル設定・認証情報
+.env
+.env.*
+!.env.example
+.firebaserc
+public/config.js
+public/sw-config.js
+*service-account*.json
+*serviceAccount*.json
+*.pem
+*.key
+
+# 依存関係・実行時ファイル
+node_modules/
+.firebase/
+*.log
+coverage/
+test-results/
+playwright-report/
+.DS_Store
+Thumbs.db
+
+# 開発用データ・過去のGit管理フォルダ
+.git_disabled/
+memo.md
+v50_recovery/
+.agents/

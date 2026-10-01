@@ -1,0 +1,7 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 制作実績の初期設定。独自の認可設計と検証が済むまで実データには接続しない。
+    match /{document=**} { allow read, write: if false; }
+  }
+}

@@ -1,0 +1,3320 @@
+/* ==========================================================================
+   StudioSync - Multi-Calendar App
+   ========================================================================== */
+:root {
+    --bg: #1e1f22;
+    --text: #f8fafc;
+    --text-sub: #94a3b8;
+    --glass: rgba(43, 45, 49, 0.90);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --accent: #5865F2;
+    --accent-dim: rgba(88, 101, 242, 0.15);
+    --ok: #10b981;
+    --ok-glow: rgba(16, 185, 129, 0.4);
+    --ok-bg: rgba(16, 185, 129, 0.15);
+    --ok-border: rgba(16, 185, 129, 0.35);
+    --partial: #f59e0b;
+    --partial-bg: rgba(245, 158, 11, 0.12);
+    --partial-border: rgba(245, 158, 11, 0.3);
+    --ng: #ef4444;
+    --batch: #8b5cf6;
+    --batch-bg: rgba(139, 92, 246, 0.15);
+    --batch-border: rgba(139, 92, 246, 0.4);
+    --r: 14px;
+    --r-sm: 8px;
+    --tab-h: 60px;
+}
+
+:root.theme-light {
+    --bg: #f8fafc;
+    --text: #1e293b;
+    --text-main: #1e293b;
+    --text-sub: #64748b;
+    --glass: rgba(255, 255, 255, 0.95);
+    --glass-border: rgba(0, 0, 0, 0.12);
+    --accent: #5865F2;
+    --accent-dim: rgba(88, 101, 242, 0.1);
+    --ok: #16a34a;
+    --ok-glow: rgba(22, 163, 74, 0.2);
+    --ok-bg: rgba(22, 163, 74, 0.1);
+    --ok-border: rgba(22, 163, 74, 0.35);
+    --partial: #d97706;
+    --partial-bg: rgba(217, 119, 6, 0.08);
+    --partial-border: rgba(217, 119, 6, 0.25);
+    --ng: #dc2626;
+    --batch: #7c3aed;
+    --batch-bg: rgba(124, 58, 237, 0.08);
+    --batch-border: rgba(124, 58, 237, 0.3);
+    --danger: #dc2626;
+}
+
+/* background-glowは削除済み（フラットデザインへ移行） */
+
+
+.theme-light .glass-panel {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.theme-light .overlay-modal-box,
+.theme-light .full-modal-inner {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.theme-light .full-modal {
+    background: #f8fafc;
+}
+
+.theme-light .ok-display {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.theme-light .ng-tab {
+    color: #64748b;
+    background: transparent;
+}
+
+.theme-light .ng-tab.active {
+    color: #2563eb;
+    background: rgba(37, 99, 235, 0.08);
+}
+
+.theme-light .btn-ghost {
+    color: #475569;
+    background: transparent;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.theme-light .btn-ghost:active {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.theme-light .day-cell {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    color: #1e293b;
+}
+
+.theme-light .day-cell.outside {
+    background: #f1f5f9;
+    color: #94a3b8;
+}
+
+.theme-light .day-cell.today {
+    border-color: #2563eb;
+}
+
+.theme-light .day-cell.ok-all {
+    background: rgba(22, 163, 74, 0.08);
+    border-color: rgba(22, 163, 74, 0.35);
+}
+
+.theme-light .day-cell.ok-partial {
+    background: rgba(217, 119, 6, 0.06);
+    border-color: rgba(217, 119, 6, 0.3);
+}
+
+.theme-light .tab-bar {
+    background: rgba(255, 255, 255, 0.95);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.theme-light .tab-item {
+    color: #94a3b8;
+}
+
+.theme-light .tab-item.active {
+    color: #2563eb;
+}
+
+.theme-light .text-input {
+    background: #f8fafc;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    color: #1e293b;
+}
+
+.theme-light .timeline-bar {
+    background: #e2e8f0;
+}
+
+.theme-light .cal-card {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.theme-light .icon-btn {
+    color: #475569;
+}
+
+.theme-light .ng-section h4 {
+    color: #1e293b;
+}
+
+.theme-light .ng-sync-option {
+    background: #f8fafc !important;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.theme-light .ng-tabs {
+    background: #f1f5f9;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.theme-light .ok-display {
+    background: #ffffff !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 繧ｿ繧､繝繝ｩ繧､繝ｳ縺ｮ濶ｲ隱ｿ謨ｴ・育區閭梧勹縺ｧ繧りｦ九ｄ縺吶＞邱代→襍､・・*/
+.theme-light .tl-ok {
+    background: linear-gradient(180deg, rgba(16, 185, 129, 0.85), rgba(16, 185, 129, 0.55)) !important;
+}
+
+.theme-light .tl-ng {
+    background: linear-gradient(180deg, rgba(239, 68, 68, 0.5), rgba(239, 68, 68, 0.3)) !important;
+}
+
+.theme-light .tl-grid {
+    background: rgba(0, 0, 0, 0.1) !important;
+}
+
+.theme-light .mode-panel {
+    background: transparent;
+}
+
+.theme-light .hint {
+    color: #64748b;
+}
+
+.theme-light .modal-scroll {
+    background: #ffffff;
+}
+
+.theme-light .batch-banner {
+    background: #ffffff !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+.theme-light .weekdays span {
+    color: #64748b;
+}
+
+.theme-light .cal-legend span {
+    color: #475569;
+}
+
+.theme-light hr {
+    border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.theme-light .ng-member-row {
+    background: #f8fafc;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.theme-light .profile-card {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.theme-light .mypage-section {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* 繝ｩ繧､繝医ユ繝ｼ繝・ NG迥ｶ豕√お繝ｪ繧｢縺ｮ閭梧勹繧堤區縺ｫ */
+.theme-light .ng-member-row {
+    background: #ffffff !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+.theme-light .ng-member-list {
+    background: #ffffff !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 繝ｩ繧､繝医ユ繝ｼ繝・ time input縺ｨ繝・く繧ｹ繝・nput繧堤區閭梧勹縺ｫ */
+.theme-light input[type="time"],
+.theme-light input[type="text"],
+.theme-light input[type="date"],
+.theme-light select {
+    background: #ffffff !important;
+    border: 1px solid rgba(0, 0, 0, 0.15) !important;
+    color: #1e293b !important;
+}
+
+.theme-light .time-row input[type="time"] {
+    background: #ffffff !important;
+    border: 1px solid rgba(0, 0, 0, 0.15) !important;
+}
+
+.theme-light .form-field input {
+    background: #ffffff !important;
+    border: 1px solid rgba(0, 0, 0, 0.15) !important;
+    color: #1e293b !important;
+}
+
+/* 繝ｩ繧､繝医ユ繝ｼ繝・ 繝｢繝ｼ繝繝ｫ蜀・・蜊企乗・閭梧勹繧堤區縺ｫ */
+.theme-light [style*="rgba(255,255,255,0.05)"],
+.theme-light [style*="rgba(255,255,255,0.03)"] {
+    background: #f8fafc !important;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+
+/* 繝舌ャ繝√Δ繝ｼ繝・ 閾ｪ蛻・・NG迥ｶ諷玖｡ｨ遉ｺ */
+.my-ng-allday {
+    background: rgba(239, 68, 68, 0.15) !important;
+    border: 1px solid rgba(239, 68, 68, 0.4) !important;
+}
+
+.my-ng-partial {
+    background: rgba(245, 158, 11, 0.12) !important;
+    border: 1px solid rgba(245, 158, 11, 0.35) !important;
+}
+
+.theme-light .my-ng-allday {
+    background: rgba(239, 68, 68, 0.1) !important;
+    border: 1px solid rgba(239, 68, 68, 0.3) !important;
+}
+
+.theme-light .my-ng-partial {
+    background: rgba(245, 158, 11, 0.1) !important;
+    border: 1px solid rgba(245, 158, 11, 0.3) !important;
+}
+
+/* 繧ｹ繝ｯ繧､繝励い繝九Γ繝ｼ繧ｷ繝ｧ繝ｳ */
+.swipe-transition {
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+.swipe-exit {
+    transform: translateX(100%) !important;
+    opacity: 0 !important;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+/* html要素にも背景色を設定（iOSキーボード表示時のスクロールで隙間が見えないようにする） */
+html {
+    background: #1e1f22;
+    background: var(--bg, #1e1f22);
+    height: 100%;
+}
+
+body {
+    font-family: 'Inter', 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+}
+
+/* ==========================================================================
+   app-root: iOS PWAキーボードバグ対策コンテナ
+   iOS PWA では、キーボード閉鎖後に position:fixed の bottom:0 や
+   height:100dvh（動的ビューポート単位）がリセットされないバグがある。
+
+   解決策: height に 100lvh（Largest Viewport Height）を使う。
+   100lvh はキーボード表示中でも値が変化しない安定した単位で、
+   「キーボード閉鎖後にリセットされない」バグの影響を受けない。
+   top:0 は正常に動作することをユーザー検証済み。
+   fallback は 100vh（iOS 15.4 未満向け）。
+   ========================================================================== */
+.app-root {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100vh;   /* fallback: iOS 15.4 未満 */
+    height: 100lvh;  /* iOS 15.4+: キーボード開閉で変化しない安定値 */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* background-glowは削除済み（フラットデザインへ移行） */
+
+
+.glass-panel {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    border-radius: var(--r);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Buttons */
+button {
+    cursor: pointer;
+    font-family: inherit;
+    border: none;
+    outline: none;
+    border-radius: var(--r-sm);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-weight: 500;
+    transition: all 0.2s;
+    user-select: none;
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: #fff;
+    padding: 12px 20px;
+    font-size: 0.9rem;
+    min-height: 44px;
+    width: 100%;
+}
+
+.btn-primary:active {
+    transform: scale(0.97);
+}
+
+.btn-primary.sm {
+    padding: 8px 14px;
+    font-size: 0.8rem;
+    min-height: 36px;
+    width: auto;
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--text-sub);
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    min-height: 44px;
+    border: 1px solid var(--glass-border);
+}
+
+.btn-ghost.sm {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    min-height: 36px;
+}
+
+.btn-ng {
+    background: rgba(239, 68, 68, 0.12);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    padding: 14px 20px;
+    width: 100%;
+    font-size: 0.9rem;
+    min-height: 48px;
+}
+
+.btn-ng:active {
+    transform: scale(0.98);
+}
+
+.btn-ng.active {
+    background: var(--ng);
+    color: #fff;
+    border-color: var(--ng);
+}
+
+.btn-danger-styled {
+    background: rgba(14, 165, 233, 0.15) !important;
+    color: var(--accent) !important;
+    border: 1px solid rgba(14, 165, 233, 0.4) !important;
+}
+
+.btn-danger-styled:hover,
+.btn-danger-styled:active {
+    background: var(--accent) !important;
+    color: #fff !important;
+}
+
+.btn-danger-styled-outline {
+    background: transparent !important;
+    color: var(--accent) !important;
+    border: 1px solid rgba(14, 165, 233, 0.4) !important;
+}
+
+.btn-danger-styled-outline:hover,
+.btn-danger-styled-outline:active {
+    background: rgba(14, 165, 233, 0.15) !important;
+}
+
+.btn-ng-outline {
+    background: transparent;
+    color: var(--text-sub);
+    border: 1px solid var(--glass-border);
+    padding: 14px 20px;
+    width: 100%;
+    font-size: 0.9rem;
+    min-height: 48px;
+}
+
+.btn-propose {
+    width: 100%;
+    padding: 14px 20px;
+    min-height: 48px;
+    background: linear-gradient(135deg, var(--ok), #059669);
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: var(--r-sm);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.btn-propose:active {
+    transform: scale(0.97);
+}
+
+.icon-btn {
+    background: transparent;
+    color: var(--text-sub);
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    border-radius: 50%;
+    font-size: 0.9rem;
+}
+
+.icon-btn:active {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+select,
+input[type="time"],
+input[type="date"],
+.text-input {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--glass-border);
+    color: var(--text);
+    padding: 10px 12px;
+    border-radius: var(--r-sm);
+    font-family: inherit;
+    font-size: 0.9rem;
+    outline: none;
+    min-height: 44px;
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.text-input::placeholder {
+    color: var(--text-sub);
+    opacity: 0.6;
+}
+
+/* Shell */
+.app-shell {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    max-width: 480px;
+    width: 100%;
+    margin: 0 auto;
+    position: relative;
+}
+
+.tab-page {
+    display: none;
+    flex-direction: column;
+    /* 下部パディング: tab-barはflexboxで分離済みのためタブバー分不要。
+       ただし広告バナー表示時のコンテンツ隠れ防止として16px確保 */
+    padding: 12px 12px 16px;
+    gap: 12px;
+    height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.tab-page.active {
+    display: flex;
+}
+
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    gap: 8px;
+    /* glass-panelの枠を除去してフラットに、下線のみ */
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.app-header h1 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.app-header h1 i {
+    color: var(--ok);
+    font-size: 1rem;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.logo i {
+    color: var(--ok);
+    font-size: 1rem;
+}
+
+.logo h1 {
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+/* Tab Bar */
+/* position:fixedを使わず、app-rootのflexboxで常にコンテナ底部に配置。
+   これによりiOSのキーボード開閉時にwindow.scrollYが変化しても位置がずれない。 */
+.tab-bar {
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    height: calc(var(--tab-h) + env(safe-area-inset-bottom, 0px));
+    display: flex;
+    align-items: flex-start;
+    background: rgba(30, 31, 34, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--glass-border);
+    z-index: 80;
+    padding-top: 0;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    user-select: none;
+    touch-action: manipulation;
+}
+
+.tab-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: var(--tab-h);
+    gap: 2px;
+    background: transparent;
+    color: var(--text-sub);
+    font-size: 0.65rem;
+    position: relative;
+    border-radius: 0;
+    user-select: none;
+    touch-action: manipulation;
+}
+
+.tab-item i {
+    font-size: 1.1rem;
+}
+
+.tab-item.active {
+    color: var(--accent);
+}
+
+.notif-badge {
+    position: absolute;
+    top: 6px;
+    right: calc(50% - 18px);
+    background: var(--ng);
+    color: #fff;
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 8px;
+}
+
+/* ==========================================================================
+   Calendar List (Home)
+   ========================================================================== */
+.cal-list-section h3 {
+    font-size: 0.85rem;
+    color: var(--text-sub);
+    margin-bottom: 10px;
+}
+
+.cal-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cal-card {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r);
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.cal-card:active {
+    transform: scale(0.98);
+}
+
+.cal-card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.cal-card-icon.full {
+    background: var(--accent-dim);
+    color: var(--accent);
+}
+
+.cal-card-icon.range {
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--partial);
+}
+
+/* カレンダーカードのアイコン画像 */
+.cal-card-icon-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+/* アイコン選択UI */
+.icon-picker-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.icon-preview {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    color: var(--text-sub);
+}
+
+.icon-picker-btn {
+    font-size: 0.85rem;
+    padding: 6px 14px;
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+}
+
+.icon-picker-clear {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 1px solid var(--glass-border);
+    border-radius: 50%;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-sub);
+}
+
+.cal-card-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.cal-card-info h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cal-card-info span {
+    font-size: 0.75rem;
+    color: var(--text-sub);
+}
+
+.cal-card-arrow {
+    color: var(--text-sub);
+    font-size: 0.8rem;
+}
+
+.create-cal-btn {
+    width: 100%;
+    padding: 16px;
+    margin-top: 12px;
+    background: transparent;
+    border: 2px dashed var(--glass-border);
+    color: var(--text-sub);
+    font-size: 0.9rem;
+    border-radius: var(--r);
+    min-height: 56px;
+    transition: all 0.2s;
+}
+
+.create-cal-btn:active {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* Calendar Detail */
+.cal-detail-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.cal-detail-title {
+    flex: 1;
+    min-width: 0;
+}
+
+.cal-detail-title h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cal-range-badge {
+    font-size: 0.7rem;
+    color: var(--partial);
+    background: var(--partial-bg);
+    padding: 2px 8px;
+    border-radius: 10px;
+    border: 1px solid var(--partial-border);
+}
+
+.cal-member-info {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 0.75rem;
+    color: var(--text-sub);
+}
+
+/* Calendar Grid */
+.calendar-card {
+    padding: 16px;
+}
+
+.cal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.cal-header h2 {
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+
+.cal-legend {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 12px;
+    font-size: 0.75rem;
+    color: var(--text-sub);
+    justify-content: center;
+}
+
+.cal-legend span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.dot-ok {
+    background: var(--ok);
+    box-shadow: 0 0 8px var(--ok-glow);
+}
+
+.dot-partial {
+    background: var(--partial);
+}
+
+.dot-confirmed {
+    background: #FF4081;
+    box-shadow: 0 0 8px rgba(255, 64, 129, 0.4);
+}
+
+/* 投票確定日マーカー（ピンク） */
+.day-cell.confirmed-event {
+    border: 2px solid #FF4081 !important;
+    background: rgba(255, 64, 129, 0.12) !important;
+}
+
+.day-cell.confirmed-event .day-number {
+    color: #FF4081 !important;
+}
+
+/* today + confirmed-event の複合セレクタ（todayのスタイルより優先） */
+.day-cell.today.confirmed-event {
+    border: 2px solid #FF4081 !important;
+    background: rgba(255, 64, 129, 0.12) !important;
+}
+
+.day-cell.today.confirmed-event .day-number {
+    color: #FF4081 !important;
+}
+
+.confirmed-label {
+    color: #FF4081 !important;
+    font-size: 0.5rem !important;
+    font-weight: bold;
+    line-height: 1.1;
+    margin-top: 2px;
+    white-space: nowrap;
+}
+
+/* ライトテーマ: 投票確定日マーカー */
+.theme-light .day-cell.confirmed-event {
+    border-color: #E91E63 !important;
+    background: rgba(233, 30, 99, 0.08) !important;
+}
+
+.theme-light .day-cell.confirmed-event .day-number {
+    color: #C2185B !important;
+}
+
+.theme-light .day-cell.today.confirmed-event {
+    border-color: #E91E63 !important;
+    background: rgba(233, 30, 99, 0.08) !important;
+}
+
+.theme-light .day-cell.today.confirmed-event .day-number {
+    color: #C2185B !important;
+}
+
+.theme-light .confirmed-label {
+    color: #C2185B !important;
+}
+
+.theme-light .dot-confirmed {
+    background: #C2185B;
+}
+
+.weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    margin-bottom: 6px;
+}
+
+.weekdays span {
+    font-weight: 600;
+    color: var(--text-sub);
+    font-size: 0.75rem;
+    padding: 4px 0;
+}
+
+.days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-auto-rows: minmax(52px, 1fr);
+    gap: 4px;
+}
+
+.day-cell {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: var(--r-sm);
+    padding: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    min-height: 52px;
+}
+
+.day-cell:active {
+    transform: scale(0.95);
+}
+
+.day-cell.empty {
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.day-cell.outside {
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.day-cell.selected {
+    border-color: var(--accent);
+    box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.day-number {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-sub);
+    line-height: 1;
+}
+
+.day-cell.today .day-number {
+    color: var(--accent);
+}
+
+.day-cell.ok-all {
+    background: var(--ok-bg) !important;
+    border-color: var(--ok-border) !important;
+    animation: okPulse 3s ease-in-out infinite;
+}
+
+.day-cell.ok-all .day-number {
+    color: var(--ok) !important;
+    font-weight: 700;
+}
+
+.day-cell.ok-all .ok-label {
+    color: var(--ok);
+    font-size: 0.55rem;
+    font-weight: 700;
+    margin-top: 2px;
+}
+
+@keyframes okPulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 6px var(--ok-glow)
+    }
+
+    50% {
+        box-shadow: 0 0 16px var(--ok-glow)
+    }
+}
+
+.day-cell.ok-partial {
+    background: var(--partial-bg) !important;
+    border-color: var(--partial-border) !important;
+}
+
+.day-cell.ok-partial .day-number {
+    color: var(--partial) !important;
+}
+
+.day-cell.ok-partial .ok-label {
+    color: var(--partial);
+    font-size: 0.5rem;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.day-cell.batch-selectable {
+    cursor: crosshair;
+}
+
+.day-cell.batch-selected {
+    background: var(--batch-bg) !important;
+    border-color: var(--batch) !important;
+    box-shadow: 0 0 8px rgba(139, 92, 246, 0.3) !important;
+}
+
+.day-cell.batch-selected .day-number {
+    color: var(--batch) !important;
+}
+
+.day-cell.batch-selected::after {
+    content: '✓';
+    position: absolute;
+    bottom: 2px;
+    right: 4px;
+    color: var(--batch);
+    font-weight: 700;
+    font-size: 0.7rem;
+}
+
+.batch-banner {
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.batch-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: var(--batch);
+    font-weight: 600;
+}
+
+.batch-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+}
+
+.batch-count {
+    background: var(--batch);
+    color: white;
+    padding: 1px 7px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.75rem;
+}
+
+/* Full Modal */
+.full-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 85;
+    background: var(--bg);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%)
+    }
+
+    to {
+        transform: translateY(0)
+    }
+}
+
+.full-modal-inner {
+    max-width: 480px;
+    margin: 0 auto;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    padding-top: env(safe-area-inset-top, 0px);
+}
+
+.modal-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--glass-border);
+    flex-shrink: 0;
+}
+
+.modal-top-bar h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.modal-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-bottom: 100px;
+}
+
+.ok-display {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--r-sm);
+    padding: 14px;
+}
+
+.ok-status-icon {
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 4px;
+}
+
+.ok-status-text {
+    text-align: center;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.ok-time-slot {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: var(--ok-bg);
+    border: 1px solid var(--ok-border);
+    border-radius: var(--r-sm);
+    margin-top: 8px;
+    color: var(--ok);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.no-availability {
+    text-align: center;
+    color: var(--text-sub);
+    font-style: italic;
+    padding: 10px;
+    font-size: 0.9rem;
+}
+
+/* Timeline Bar - Redesigned */
+.timeline-wrap {
+    margin-top: 12px;
+}
+
+.tl-label {
+    font-size: 0.7rem;
+    color: var(--text-sub);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+}
+
+.tl-bar-wrap {
+    position: relative;
+}
+
+.tl-bar {
+    position: relative;
+    border-radius: 6px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.tl-bar-main {
+    height: 32px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tl-seg {
+    position: absolute;
+    top: 0;
+    height: 100%;
+}
+
+.tl-ok {
+    background: linear-gradient(180deg, rgba(16, 185, 129, 0.7), rgba(16, 185, 129, 0.4));
+}
+
+.tl-ng {
+    background: linear-gradient(180deg, rgba(239, 68, 68, 0.3), rgba(239, 68, 68, 0.15));
+}
+
+.tl-grid {
+    position: absolute;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.15);
+    z-index: 2;
+    pointer-events: none;
+}
+
+.tl-time-labels {
+    position: relative;
+    height: 18px;
+    margin-top: 3px;
+}
+
+.tl-time-labels span {
+    position: absolute;
+    font-size: 0.65rem;
+    color: var(--text-sub);
+    transform: translateX(-50%);
+    font-weight: 500;
+    line-height: 1;
+}
+
+.tl-legend-inline {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.tl-legend-inline span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.65rem;
+    color: var(--text-sub);
+}
+
+.tl-leg-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+}
+
+.tl-leg-dot-ok {
+    background: var(--ok);
+}
+
+.tl-leg-dot-ng {
+    background: var(--ng);
+    opacity: 0.5;
+}
+
+/* Member NG List (compact) */
+.ng-member-list {
+    margin-top: 8px;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: var(--r-sm);
+    padding: 10px 12px;
+    border: 1px solid rgba(239, 68, 68, 0.1);
+}
+
+.ng-member-header {
+    font-size: 0.75rem;
+    color: var(--text-sub);
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.ng-member-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.ng-member-row:first-of-type {
+    border-top: none;
+}
+
+.ng-member-name {
+    font-size: 0.8rem;
+    color: var(--text);
+    font-weight: 500;
+}
+
+.ng-pill {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 10px;
+}
+
+.pill-allday {
+    background: rgba(239, 68, 68, 0.15);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.pill-time {
+    background: rgba(245, 158, 11, 0.12);
+    color: var(--partial);
+    border: 1px solid var(--partial-border);
+}
+
+.divider {
+    border: none;
+    border-top: 1px solid var(--glass-border);
+}
+
+/* Proposal Form */
+.proposal-form {
+    background: rgba(16, 185, 129, 0.05);
+    border: 1px solid var(--ok-border);
+    border-radius: var(--r-sm);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.proposal-form h4 {
+    font-size: 0.9rem;
+    color: var(--ok);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.form-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.form-field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.form-field label {
+    font-size: 0.75rem;
+    color: var(--text-sub);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.required {
+    color: var(--ng);
+    font-size: 0.65rem;
+}
+
+.optional {
+    color: var(--text-sub);
+    font-size: 0.65rem;
+}
+
+.sep {
+    color: var(--text-sub);
+    font-size: 0.9rem;
+    padding-bottom: 12px;
+}
+
+.form-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* Type Toggle */
+.type-toggle {
+    display: flex;
+    gap: 6px;
+}
+
+.type-btn {
+    flex: 1;
+    padding: 10px;
+    font-size: 0.8rem;
+    color: var(--text-sub);
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-sm);
+    min-height: 44px;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.type-btn.active {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-dim);
+}
+
+.range-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    animation: fadeIn 0.2s;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px)
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0)
+    }
+}
+
+/* Invite Link */
+.invite-link-box {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.invite-link-box input {
+    flex: 1;
+    font-size: 0.8rem;
+}
+
+/* NG Section */
+.ng-section h4 {
+    font-size: 0.8rem;
+    color: var(--text-sub);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.ng-tabs {
+    display: flex;
+    gap: 3px;
+    margin-bottom: 10px;
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: var(--r-sm);
+    padding: 3px;
+}
+
+.ng-tab {
+    flex: 1;
+    padding: 10px 4px;
+    font-size: 0.7rem;
+    color: var(--text-sub);
+    background: transparent;
+    border-radius: 6px;
+    flex-direction: column;
+    gap: 2px;
+    min-height: 44px;
+}
+
+.ng-tab i {
+    font-size: 0.85rem;
+}
+
+.ng-tab.active {
+    color: var(--accent);
+    background: var(--accent-dim);
+    font-weight: 600;
+}
+
+.mode-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.hint {
+    font-size: 0.8rem;
+    color: var(--text-sub);
+    line-height: 1.4;
+}
+
+.time-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.time-row input {
+    flex: 1;
+}
+
+.ng-summary {
+    font-size: 0.8rem;
+    color: var(--text-sub);
+    font-style: italic;
+    text-align: center;
+    padding: 4px;
+}
+
+.ng-summary .ng-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--r-sm);
+    margin-top: 4px;
+    font-style: normal;
+}
+
+.delete-btn {
+    background: transparent;
+    color: var(--text-sub);
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 6px;
+    min-width: 36px;
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Overlay Modal */
+/* iOS PWAグレー隙間バグ対策:
+   - position:absolute + app-root内に配置（position:fixedによるsafe-area外へのはみ出し防止）
+   - background: rgba(0,0,0,0.88) に上げて、ホームインジケーター周辺のOS描画が透けても目立たないようにする
+   - ::after疑似要素でenv(safe-area-inset-bottom)の高さの領域を完全不透明で塗りつぶす
+   - body:has() で body背景も黒に変更（:has() = iOS 16+対応） */
+.overlay-modal {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.88);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    padding: 16px;
+    overflow: hidden;
+}
+
+/* safe-area-inset-bottomの高さを完全不透明な黒で塗りつぶして隙間を消す */
+.overlay-modal::after {
+    content: '';
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: env(safe-area-inset-bottom, 34px);
+    background: #000;
+    pointer-events: none;
+    z-index: 200;
+}
+
+/* iOS 16+ :has()対応: body背景をほぼ黒にしてsafe-area外の隙間を目立たなくする */
+body:has(.overlay-modal:not(.hidden)) {
+    background: #000 !important;
+}
+
+.overlay-modal.hidden {
+    display: none;
+}
+
+
+.overlay-modal-box {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    /* オーバーレイ本体のスクロールを封じた代わりに、
+       モーダルカード自体を高さ制限付きでスクロール可能にする */
+    max-height: calc(100dvh - 80px); /* fallback */
+    max-height: calc(100lvh - 80px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.overlay-modal-box p {
+    color: var(--text-sub);
+    font-size: 0.9rem;
+}
+
+.accent-text {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.modal-btns {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.modal-btns .btn-primary {
+    width: auto;
+}
+
+.error-msg {
+    color: var(--ng);
+    font-size: 0.8rem;
+    min-height: 18px;
+}
+
+/* Notifications */
+.notification-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-sub);
+}
+
+.empty-state i {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+    opacity: 0.4;
+}
+
+.empty-state p {
+    font-size: 1rem;
+    margin-bottom: 6px;
+    color: var(--text);
+    font-weight: 500;
+}
+
+.empty-state span {
+    font-size: 0.8rem;
+}
+
+.notif-card {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r);
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.notif-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notif-user {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--ok);
+}
+
+.notif-time {
+    font-size: 0.7rem;
+    color: var(--text-sub);
+}
+
+.notif-body {
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.notif-body .notif-date {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.notif-body .notif-slot {
+    color: var(--ok);
+    font-weight: 600;
+}
+
+.notif-cal-name {
+    font-size: 0.75rem;
+    color: var(--text-sub);
+    margin-top: 2px;
+}
+
+/* My Page */
+.mypage-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.profile-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+}
+
+.avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-size: 1.2rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-info h3 {
+    font-size: 1rem;
+}
+
+.profile-sub {
+    font-size: 0.75rem;
+    color: var(--text-sub);
+}
+
+.mypage-section {
+    padding: 16px;
+}
+
+.mypage-section h4 {
+    font-size: 0.85rem;
+    color: var(--text-sub);
+    margin-bottom: 10px;
+}
+
+.my-ng-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.my-ng-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--r-sm);
+    font-size: 0.85rem;
+}
+
+.my-ng-item .ng-date {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.my-ng-item .ng-detail {
+    color: var(--text-sub);
+}
+
+.my-ng-empty {
+    text-align: center;
+    color: var(--text-sub);
+    font-style: italic;
+    padding: 20px;
+    font-size: 0.85rem;
+}
+
+/* Vote UI in Notifications */
+.vote-stats {
+    display: flex;
+    gap: 12px;
+    margin: 12px 0;
+    font-size: 0.85rem;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.vote-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 500;
+}
+
+.vote-badge.ok {
+    color: var(--success);
+}
+
+.vote-badge.ng {
+    color: var(--danger);
+}
+
+.vote-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.vote-btn {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-color);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+}
+
+.vote-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.vote-btn.btn-ok.active {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: var(--success);
+    color: var(--success);
+}
+
+.vote-btn.btn-ng.active {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+/* Toast */
+.toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ok);
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    z-index: 100002;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+}
+
+.toast.show {
+    opacity: 1;
+}
+
+@media (min-width:768px) {
+    .app-shell {
+        max-width: 1100px;
+    }
+
+    .tab-bar {
+        max-width: 1100px;
+    }
+
+    .days {
+        grid-auto-rows: minmax(80px, 1fr);
+        gap: 6px;
+    }
+
+    .day-cell {
+        padding: 8px;
+        align-items: flex-start;
+    }
+
+    .day-cell:hover {
+        transform: translateY(-2px);
+        background: rgba(255, 255, 255, 0.05);
+    }
+}
+
+/* Toggle Switch */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 28px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 28px;
+    transition: 0.3s;
+}
+
+.toggle-slider::before {
+    content: "";
+    position: absolute;
+    height: 22px;
+    width: 22px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+.toggle-switch input:checked+.toggle-slider {
+    background: var(--accent);
+}
+
+.toggle-switch input:checked+.toggle-slider::before {
+    transform: translateX(22px);
+}
+
+.theme-light .toggle-slider {
+    background: rgba(0, 0, 0, 0.15);
+}
+
+/* ============================================================================
+   Tutorial / Coach Marks
+   ============================================================================ */
+#tutorialOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+}
+
+#tutorialOverlay.active {
+    display: block;
+    animation: coachFadeIn 0.3s ease-out;
+}
+
+#tutorialOverlay.active:not(.coach-spotlight-mode) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.coach-spotlight-svg {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+}
+
+.coach-fullscreen {
+    width: 100%;
+    max-width: 380px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    max-height: 500px;
+    justify-content: space-between;
+}
+
+.coach-center-content {
+    text-align: center;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.coach-center-emoji {
+    font-size: 3.5rem;
+    margin-bottom: 16px;
+    animation: coachBounce 1s ease infinite alternate;
+}
+
+.coach-center-title {
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 12px 0;
+}
+
+.coach-center-text {
+    color: var(--text-sub);
+    font-size: 1rem;
+    line-height: 1.7;
+    margin: 0;
+}
+
+.coach-skip {
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 16px) + 8px);
+    right: 16px;
+    background: none;
+    border: none;
+    color: var(--text-sub);
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 8px 12px;
+    z-index: 210;
+    min-height: 36px;
+}
+
+.coach-skip-spotlight {
+    top: env(safe-area-inset-top, 16px);
+}
+
+.coach-tooltip {
+    position: fixed;
+    z-index: 210;
+    background: var(--glass);
+    border: 1px solid rgba(59, 130, 246, 0.4);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    animation: coachTooltipIn 0.3s ease-out;
+}
+
+.coach-tooltip-title {
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 6px 0;
+}
+
+.coach-tooltip-text {
+    color: var(--text-sub);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0 0 8px 0;
+}
+
+/* 上向き矢印：外側（border色） */
+.coach-tooltip.arrow-top::after {
+    content: '';
+    position: absolute;
+    top: -9px;
+    left: var(--arrow-left, 50%);
+    transform: translateX(-50%);
+    border-left: 9px solid transparent;
+    border-right: 9px solid transparent;
+    border-bottom: 9px solid rgba(255, 255, 255, 0.2);
+}
+
+/* 上向き矢印：内側（塗り色） */
+.coach-tooltip.arrow-top::before {
+    content: '';
+    position: absolute;
+    top: -7px;
+    left: var(--arrow-left, 50%);
+    transform: translateX(-50%);
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-bottom: 7px solid rgba(30, 30, 60, 0.95);
+    z-index: 1;
+}
+
+/* 下向き矢印：外側（border色） */
+.coach-tooltip.arrow-bottom::before {
+    content: '';
+    position: absolute;
+    bottom: -9px;
+    left: var(--arrow-left, 50%);
+    transform: translateX(-50%);
+    border-left: 9px solid transparent;
+    border-right: 9px solid transparent;
+    border-top: 9px solid rgba(255, 255, 255, 0.2);
+}
+
+/* 下向き矢印：内側（塗り色） */
+.coach-tooltip.arrow-bottom::after {
+    content: '';
+    position: absolute;
+    bottom: -7px;
+    left: var(--arrow-left, 50%);
+    transform: translateX(-50%);
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 7px solid rgba(30, 30, 60, 0.95);
+    z-index: 1;
+}
+
+.coach-dots {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    padding: 10px 0;
+}
+
+.coach-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: all 0.3s;
+}
+
+.coach-dot.active {
+    background: var(--accent);
+    width: 18px;
+    border-radius: 3px;
+}
+
+.coach-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.coach-btn-prev {
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--text-sub);
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.coach-btn-next {
+    background: linear-gradient(135deg, var(--accent), #6366f1);
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    flex: 1;
+    max-width: 160px;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.coach-btn-next:active {
+    transform: scale(0.97);
+}
+
+.coach-btn-prev:active {
+    opacity: 0.6;
+}
+
+@keyframes coachFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes coachTooltipIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes coachBounce {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-8px);
+    }
+}
+
+/* ==========================================================================
+   Settings Page (Timetree style)
+   ========================================================================== */
+.settings-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.settings-section-header {
+    padding: 28px 20px 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-sub);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.settings-section-header:first-child {
+    padding-top: 16px;
+}
+
+.settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--glass-border);
+    min-height: 48px;
+}
+
+.settings-row-tap {
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.settings-row-tap:active {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.settings-label {
+    font-size: 0.95rem;
+    color: var(--text, #f8fafc);
+}
+
+.settings-value {
+    color: var(--text-sub);
+    font-size: 0.9rem;
+}
+
+.theme-light .settings-row-tap:active {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.theme-light .settings-label {
+    color: #1e293b;
+}
+
+/* ==========================================================================
+   Q&A Accordion
+   ========================================================================== */
+.qa-item {
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.qa-item summary {
+    padding: 14px 0;
+    font-size: 0.95rem;
+    cursor: pointer;
+    color: var(--text, #f8fafc);
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.qa-item summary::after {
+    content: '\f078';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 0.7rem;
+    color: var(--text-sub);
+    transition: transform 0.2s;
+}
+
+.qa-item[open] summary::after {
+    transform: rotate(180deg);
+}
+
+.qa-item summary::-webkit-details-marker {
+    display: none;
+}
+
+.qa-item p {
+    padding: 0 0 14px;
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--text-sub);
+    line-height: 1.6;
+}
+
+/* 詳細設定 折りたたみ矢印アニメーション */
+#scheduleOptionsDetails summary::-webkit-details-marker {
+    display: none;
+}
+
+#scheduleOptionsDetails[open] summary .fa-chevron-right {
+    transform: rotate(90deg);
+}
+
+/* ==========================================================================
+   Completion Bar (calendar detail bottom)
+   ========================================================================== */
+.completion-bar {
+    padding: 14px;
+    border-radius: var(--r-sm);
+}
+
+/* ==========================================================================
+   日付ナビゲーション スライドアニメーション
+   ========================================================================== */
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ==========================================================================
+   チュートリアル（コーチマーク方式）
+   ========================================================================== */
+#tutorialOverlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 99999;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    overscroll-behavior: none;
+}
+
+#tutorialOverlay.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.85);
+}
+
+#tutorialOverlay.coach-spotlight-mode {
+    background: transparent;
+}
+
+.coach-fullscreen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    color: white;
+    text-align: center;
+    animation: coachFadeIn 0.4s ease-out;
+}
+
+.coach-skip {
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 16px) + 8px);
+    right: 16px;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+    cursor: pointer;
+    z-index: 100001;
+}
+
+.coach-skip-spotlight {
+    color: rgba(255, 255, 255, 0.6);
+    background: none;
+    padding: 8px 12px;
+    border-radius: 0;
+    font-size: 0.9rem;
+}
+
+.coach-center-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.coach-center-emoji {
+    font-size: 4rem;
+    animation: coachBounce 1s ease-in-out infinite alternate;
+}
+
+.coach-center-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.coach-center-text {
+    font-size: 1rem;
+    opacity: 0.85;
+    margin: 0;
+    line-height: 1.6;
+}
+
+.coach-dots {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin: 16px 0;
+}
+
+.coach-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transition: all 0.3s;
+}
+
+.coach-dot.active {
+    background: var(--accent);
+    width: 20px;
+    border-radius: 4px;
+}
+
+.coach-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 8px;
+    width: 100%;
+    max-width: 320px;
+}
+
+.coach-btn-next {
+    flex: 1;
+    padding: 12px 24px;
+    background: var(--accent);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.coach-btn-prev {
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.coach-spotlight-svg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 99999;
+    pointer-events: none;
+}
+
+.coach-tooltip {
+    position: fixed;
+    background: var(--glass-bg, rgba(30, 30, 60, 0.95));
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.15));
+    border-radius: 16px;
+    padding: 16px 20px;
+    color: white;
+    z-index: 100000;
+    animation: coachTooltipIn 0.3s ease-out;
+}
+
+.coach-tooltip-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 6px;
+}
+
+.coach-tooltip-text {
+    font-size: 0.9rem;
+    opacity: 0.85;
+    margin: 0 0 10px;
+    line-height: 1.5;
+}
+
+@keyframes coachFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes coachTooltipIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes coachBounce {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-8px);
+    }
+}
+
+/* トグルスイッチ */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.15);
+    transition: 0.3s;
+    border-radius: 24px;
+}
+
+.toggle-slider::before {
+    content: '';
+    position: absolute;
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+.toggle-switch input:checked+.toggle-slider {
+    background: var(--accent);
+}
+
+.toggle-switch input:checked+.toggle-slider::before {
+    transform: translateX(20px);
+}
+
+/* TimeTree風 設定画面 */
+.tt-section-label {
+    font-size: 0.75rem;
+    color: var(--text-sub);
+    padding: 16px 4px 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tt-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.tt-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    min-height: 48px;
+}
+
+.tt-row-label {
+    font-size: 0.95rem;
+    color: var(--text-main);
+}
+
+.tt-row-value {
+    color: var(--text-sub);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.tt-divider {
+    height: 1px;
+    background: var(--glass-border);
+    margin: 0 16px;
+}
+
+.tt-row-tap {
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.tt-row-tap:active {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.tt-chevron {
+    color: var(--text-sub);
+    font-size: 0.7rem;
+    opacity: 0.5;
+}
+
+.tt-select {
+    background: transparent;
+    border: none;
+    color: var(--text-sub);
+    font-size: 0.9rem;
+    text-align: right;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    padding: 4px 8px;
+}
+
+.tt-select option {
+    background: var(--bg);
+    color: var(--text-main);
+}
+
+/* タブバー iPhone対応強化（app-root内flexboxで固定済みのため position:fixed 不要） */
+.tab-bar {
+    flex-shrink: 0 !important;
+    width: 100% !important;
+    display: flex !important;
+}
+
+/* モーダル表示時にタブバーを非表示にするクラス */
+.tab-bar.tab-bar-hidden {
+    display: none !important;
+}
+
+/* キーボード表示時にタブバーを画面外に移動するクラス */
+.tab-bar.tab-bar-kb-hidden {
+    transform: translateY(100%) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+
+/* X風 設定画面 */
+.sx-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+
+}
+
+.sx-label {
+    font-size: 0.95rem;
+    color: var(--text);
+    white-space: nowrap;
+}
+
+/* マイページ風：左右にマージンを持つ区切り線 */
+.sx-divider {
+    height: 1px;
+    background: var(--glass-border);
+    margin: 0 20px;
+}
+
+.sx-row-tap {
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.sx-row-tap:active {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.sx-select {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23999'/%3E%3C/svg%3E") no-repeat right 8px center !important;
+    border: 1px solid var(--glass-border) !important;
+    outline: none !important;
+    color: var(--text-sub) !important;
+    font-size: 0.82rem !important;
+    border-radius: 6px !important;
+    padding: 0 22px 0 14px !important;
+    height: 28px !important;
+    min-height: 0 !important;
+    line-height: 28px !important;
+    box-sizing: border-box !important;
+    width: auto !important;
+    text-align: center !important;
+    cursor: pointer;
+    flex: 0 0 auto;
+}
+
+.sx-select option {
+    background: var(--bg);
+    color: var(--text);
+}
+
+.sx-theme-btns {
+    display: flex;
+    gap: 8px;
+}
+
+.sx-theme-opt {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.sx-theme-opt input {
+    accent-color: var(--accent);
+}
+
+.sx-theme-opt span {
+    font-size: 0.9rem;
+    color: var(--text-sub);
+}
+
+.sx-theme-opt input:checked+span {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   NG登録一覧ページ
+   ========================================================================== */
+.ng-list-date-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px 6px;
+    position: sticky;
+    top: 0;
+    background: var(--bg, #1c1c1c);
+    z-index: 2;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.ng-list-date-text {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.ng-list-date-text.ng-list-today {
+    color: var(--accent);
+}
+
+.ng-list-today-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #fff;
+    background: var(--accent);
+    padding: 1px 8px;
+    border-radius: 10px;
+}
+
+.ng-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.ng-list-item-detail {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    color: var(--text);
+}
+
+.ng-list-item-cal {
+    font-size: 0.75rem;
+    color: var(--text-sub);
+    flex-shrink: 0;
+    margin-left: 12px;
+}
+
+/* ライトテーマ対応 */
+.theme-light .ng-list-date-header {
+    background: #f8fafc;
+}
+
+.theme-light .ng-list-item {
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+.theme-light .ng-list-date-header {
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+/* 複数カレンダーバッジ（タップ可能） */
+.ng-list-item-cal-badge {
+    font-size: 0.75rem;
+    color: var(--accent);
+    background: var(--accent-dim);
+    padding: 3px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-left: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    user-select: none;
+}
+
+.ng-list-item-cal-badge:active {
+    opacity: 0.7;
+}
+
+/* 展開カレンダー名リスト */
+.ng-list-cal-expand {
+    padding: 0 20px 4px 36px;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.ng-list-cal-name {
+    font-size: 0.8rem;
+    color: var(--text-sub);
+    padding: 5px 0;
+    display: flex;
+    align-items: center;
+}
+
+.theme-light .ng-list-cal-expand {
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+.theme-light .ng-list-item-cal-badge {
+    background: rgba(37, 99, 235, 0.08);
+}
+
+/* ==========================================================================
+   確定予約一覧ページ
+   ========================================================================== */
+.confirmed-list-date-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px 6px;
+    position: sticky;
+    top: 0;
+    background: var(--bg, #0f172a);
+    z-index: 2;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.confirmed-list-date-text {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.confirmed-list-date-text.confirmed-list-today {
+    color: #FF4081;
+}
+
+.confirmed-list-today-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #fff;
+    background: #FF4081;
+    padding: 1px 8px;
+    border-radius: 10px;
+}
+
+.confirmed-list-item {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.confirmed-list-item-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.confirmed-list-item-time {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #FF4081;
+}
+
+.confirmed-list-item-cal {
+    font-size: 0.8rem;
+    color: var(--text-sub);
+    flex-shrink: 0;
+    margin-left: 12px;
+    background: var(--accent-dim, rgba(59, 130, 246, 0.1));
+    padding: 2px 10px;
+    border-radius: 10px;
+}
+
+.confirmed-list-item-sub {
+    font-size: 0.75rem;
+    color: var(--text-sub);
+    margin-top: 4px;
+    opacity: 0.8;
+}
+
+/* ライトテーマ対応 */
+.theme-light .confirmed-list-date-header {
+    background: #f8fafc;
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+.theme-light .confirmed-list-item {
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+.theme-light .confirmed-list-item-cal {
+    background: rgba(37, 99, 235, 0.08);
+}
+
+/* ==========================================================================
+   法的ページ（プライバシーポリシー・利用規約・特定商取引法）
+   ========================================================================== */
+.legal-content {
+    font-size: 0.9rem;
+    line-height: 1.8;
+    color: var(--text, #f8fafc);
+}
+
+.legal-content h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 24px 0 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--glass-border);
+    color: var(--text, #f8fafc);
+}
+
+.legal-content h4:first-of-type {
+    margin-top: 16px;
+}
+
+.legal-content p {
+    margin: 8px 0;
+    color: var(--text-sub, #94a3b8);
+}
+
+.legal-content ul {
+    padding-left: 20px;
+    margin: 8px 0;
+}
+
+.legal-content li {
+    margin-bottom: 6px;
+    color: var(--text-sub, #94a3b8);
+    line-height: 1.7;
+}
+
+.legal-content b {
+    color: var(--text, #f8fafc);
+}
+
+.legal-updated {
+    font-size: 0.8rem;
+    color: var(--text-sub, #94a3b8);
+    opacity: 0.7;
+    margin-bottom: 16px;
+    text-align: right;
+}
+
+.legal-contact {
+    padding: 12px 16px;
+    background: var(--accent-dim, rgba(59, 130, 246, 0.1));
+    border-radius: 10px;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    text-align: center;
+    color: var(--text, #f8fafc) !important;
+}
+
+.legal-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 0.85rem;
+}
+
+.legal-table th,
+.legal-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--glass-border);
+    text-align: left;
+    vertical-align: top;
+}
+
+.legal-table th {
+    font-weight: 600;
+    color: var(--text, #f8fafc);
+    white-space: nowrap;
+    width: 35%;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.legal-table td {
+    color: var(--text-sub, #94a3b8);
+}
+
+/* ライトテーマ対応 */
+.theme-light .legal-content h4 {
+    color: #1e293b;
+    border-bottom-color: rgba(0, 0, 0, 0.1);
+}
+
+.theme-light .legal-content b {
+    color: #1e293b;
+}
+
+.theme-light .legal-contact {
+    background: rgba(37, 99, 235, 0.06);
+    border-color: rgba(37, 99, 235, 0.15);
+    color: #1e293b !important;
+}
+
+.theme-light .legal-table th {
+    color: #1e293b;
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.theme-light .legal-table th,
+.theme-light .legal-table td {
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+/* ==========================================================================
+   Cookie同意バナー
+   ========================================================================== */
+.cookie-consent-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10000;
+    background: var(--bg-glass, rgba(28, 28, 28, 0.95));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--glass-border);
+    padding: 16px;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0));
+}
+
+.cookie-consent-banner.hidden {
+    display: none;
+}
+
+.cookie-consent-inner {
+    max-width: 500px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.cookie-consent-inner p {
+    font-size: 0.85rem;
+    color: var(--text-sub, #94a3b8);
+    margin: 0 0 12px;
+    line-height: 1.5;
+}
+
+.cookie-consent-btns {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.theme-light .cookie-consent-banner {
+    background: rgba(255, 255, 255, 0.95);
+}
+
+/* ==========================================================================
+   広告バナー（タブバー上部に固定表示）
+   ========================================================================== */
+.ad-banner-fixed {
+    position: fixed;
+    bottom: var(--tab-h);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    z-index: 79;
+    background: var(--bg);
+    border-top: 1px solid var(--glass-border);
+    padding: 4px 12px;
+    padding-bottom: calc(4px + env(safe-area-inset-bottom, 0));
+    text-align: center;
+    overflow: hidden;
+}
+
+.ad-banner-fixed.hidden {
+    display: none !important;
+}
+
+/* 広告ラベル */
+.ad-banner-fixed .ad-label {
+    font-size: 0.6rem;
+    color: var(--text-sub);
+    opacity: 0.4;
+    padding: 0 0 2px;
+    text-align: center;
+}
+
+/* AdSenseのinsタグ */
+.ad-banner-fixed ins.adsbygoogle {
+    display: block;
+    width: 100%;
+}
+
+/* ライトテーマ */
+.theme-light .ad-banner-fixed {
+    background: #f8fafc;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* 広告プレースホルダー（AdSense審査前の仮表示テキスト） */
+.ad-banner-fixed .ad-placeholder-label {
+    font-size: 0.75rem;
+    color: var(--text-sub);
+    opacity: 0.5;
+    padding: 6px 0 4px;
+    text-align: center;
+    font-style: italic;
+}
+
+/* ==========================================================================
+   Contextual Onboarding ヒントバナー
+   ========================================================================== */
+
+/* カレンダー詳細画面のヒントバナー */
+.cal-hint-banner {
+    margin-top: 12px;
+    padding: 14px 16px;
+    border-radius: var(--r);
+    border: 1.5px solid var(--accent);
+    background: var(--accent-dim);
+    animation: hintFadeIn 0.4s ease-out;
+}
+
+.cal-hint-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.cal-hint-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.cal-hint-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.cal-hint-text strong {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.cal-hint-text span {
+    font-size: 0.78rem;
+    color: var(--text-sub);
+}
+
+.cal-hint-close {
+    background: none;
+    border: none;
+    color: var(--text-sub);
+    font-size: 0.85rem;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    padding: 0;
+}
+
+.cal-hint-close:active {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+@keyframes hintFadeIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ライトテーマ */
+.theme-light .cal-hint-banner {
+    background: rgba(88, 101, 242, 0.06);
+    border-color: var(--accent);
+}
+
+.theme-light .cal-hint-close:active {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* 日付モーダル初回ヒント */
+.date-modal-hint {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    border-radius: var(--r-sm);
+    background: var(--accent-dim);
+    border: 1px solid rgba(88, 101, 242, 0.3);
+    font-size: 0.82rem;
+    color: var(--text);
+    animation: hintFadeIn 0.4s ease-out;
+}
+
+.date-modal-hint.fade-out {
+    animation: hintFadeOut 0.5s ease-out forwards;
+}
+
+@keyframes hintFadeOut {
+    from { opacity: 1; max-height: 60px; margin-bottom: 12px; padding: 10px 14px; }
+    to   { opacity: 0; max-height: 0; margin-bottom: 0; padding: 0 14px; overflow: hidden; }
+}
+
+.theme-light .date-modal-hint {
+    background: rgba(88, 101, 242, 0.06);
+    border-color: rgba(88, 101, 242, 0.2);
+}
+/* 公開デモの状態表示 */
+.public-demo-notice { position: sticky; top: 0; z-index: 40; padding: 8px 16px; background: #25232e; color: #efe8ff; font-size: 12px; line-height: 1.6; text-align: center; }
+.public-demo-notice[hidden] { display: none; }

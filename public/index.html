@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>PitaDay - みんなの空きが一目でわかる</title>
+    <meta name="description" content="PitaDayの制作実績。空き時間の比較、候補日の提案と投票を試せる公開デモです。">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style"
+        crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png?v=72.6">
+    <meta name="theme-color" content="#1e1f22">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PitaDay">
+
+    <script>
+        // Redirect LINE In-App Browser to external browser
+        var ua = navigator.userAgent || navigator.vendor || window.opera;
+        if (ua.indexOf("Line") > -1 && window.location.search.indexOf("openExternalBrowser=1") === -1) {
+            var sep = window.location.href.indexOf("?") === -1 ? "?" : "&";
+            window.location.href = window.location.href + sep + "openExternalBrowser=1";
+        }
+    </script>
+</head>
+
+<body>
+    <aside id="publicDemoNotice" class="public-demo-notice" hidden>公開デモ · サンプルと入力内容はこのブラウザに保存されます。共有・通知・Google連携は利用できません。</aside>
+    <!-- ====== Cookie同意バナー（広告導入時に有効化） ====== -->
+    <div id="cookieConsentBanner" class="cookie-consent-banner hidden">
+        <div class="cookie-consent-inner">
+            <p>このアプリでは、広告の表示やアクセス解析のためにCookieを使用します。</p>
+            <div class="cookie-consent-btns">
+                <button id="cookieAcceptAll" class="btn-primary"
+                    style="padding:8px 16px; font-size:0.85rem; border-radius:8px;">すべて同意</button>
+                <button id="cookieAcceptNecessary" class="btn-ghost"
+                    style="padding:8px 16px; font-size:0.85rem; border-radius:8px; border:1px solid var(--glass-border);">必要最小限のみ</button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- ====== ログインゲート ====== -->
+    <div id="loginGate"
+        style="position:fixed; inset:0; z-index:99999; display:flex; flex-direction:column; align-items:center; justify-content:center; background:var(--bg-main, #1e1f22); color:var(--text-main, #e2e8f0); gap:24px; padding:20px; text-align:center;">
+        <div style="font-size:2.5rem; font-weight:700;">PitaDay</div>
+        <p style="font-size:1rem; color:var(--text-sub, #94a3b8); max-width:300px; line-height:1.6;">
+            みんなの空きが一目でわかる<br>スケジュール調整アプリ</p>
+        <button id="loginGateBtn" class="btn-primary" style="padding: 14px 28px; font-size:1rem; border-radius:12px;">
+            <i class="fa-brands fa-google"></i> Googleでログイン
+        </button>
+        <span style="font-size:0.7rem; color:var(--text-sub, #94a3b8); max-width:300px; line-height:1.5;">
+            ログインすると<a href="#" id="loginGateTermsLink"
+                style="color:var(--accent, #60a5fa); text-decoration:underline;">利用規約</a>と<a href="#"
+                id="loginGatePrivacyLink"
+                style="color:var(--accent, #60a5fa); text-decoration:underline;">プライバシーポリシー</a>に同意したものとみなされます
+        </span>
+    </div>
+    <!-- ログイン済みユーザーはAuth初期化を待たずにゲートを即座に非表示 -->
+    <script>
+        (function () {
+            var uid = localStorage.getItem('ssUserId');
+            if (uid && !uid.startsWith('u_')) {
+                var gate = document.getElementById('loginGate');
+                if (gate) gate.style.display = 'none';
+            }
+
+            // iOS PWAでの画面連打によるビューポートずれ防止
+            document.addEventListener('touchmove', function (e) {
+                var el = e.target;
+                while (el && el !== document.body) {
+                    var style = window.getComputedStyle(el);
+                    var overflowY = style.overflowY;
+                    if ((overflowY === 'auto' || overflowY === 'scroll') && el.scrollHeight > el.clientHeight) {
+                        return;
+                    }
+                    el = el.parentElement;
+                }
+                e.preventDefault();
+            }, { passive: false });
+
+            // body が position:fixed で固定されているため、
+            // iOS PWA のキーボード表示時に body がスクロールされることはなく、
+            // position:fixed 要素のズレバグも発生しない。JS によるビューポート補正は不要。
+        })();
+    </script>
+
+    <!-- ====== app-root: iOS PWAキーボードバグ対策のためapp-shellとtab-barを単一fixed+flexboxコンテナに統合 ====== -->
+    <div class="app-root">
+    <div class="app-shell" style="overflow:hidden; padding-top: env(safe-area-inset-top, 0px);">
+
+        <!-- ====== TAB: カレンダー (ホーム) ====== -->
+        <div id="tabCalendar" class="tab-page active" style="overflow-x:hidden;">
+            <header class="app-header glass-panel">
+                <h1>PitaDay</h1>
+                <span id="appVersionLabel"
+                    style="font-size:0.7rem; color:var(--text-sub); font-weight:normal; align-self:flex-end; margin-bottom:2px;"></span>
+            </header>
+
+            <!-- カレンダー一覧 -->
+            <div id="calendarListView">
+                <div id="myCalendars" class="cal-list-section">
+                    <h3>参加中のカレンダー</h3>
+                    <div id="calendarList" class="cal-cards"></div>
+                </div>
+
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button id="openCreateModal" class="btn-primary"
+                        style="flex:1; padding: 12px; font-weight: bold; border-radius: 12px;">
+                        <i class="fa-solid fa-plus"></i> 新規作成
+                    </button>
+                    <button id="openInputCodeModal" class="btn-ghost"
+                        style="flex:1; padding: 12px; font-weight: bold; border-radius: 12px; background: rgba(255,255,255,0.05);">
+                        <i class="fa-solid fa-keyboard"></i> コードで参加
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- カレンダー詳細ビュー -->
+            <div id="calendarDetailView" class="hidden" style="overflow-y:hidden; height:100%;">
+                <div class="cal-detail-header">
+                    <button id="backToList" class="icon-btn"><i class="fa-solid fa-chevron-left"></i></button>
+
+                    <div class="cal-detail-title">
+                        <h2 id="calDetailName">--</h2>
+                        <span id="calDetailRange" class="cal-range-badge"></span>
+                    </div>
+
+                    <div class="calendar-header-actions" id="calHeaderActions">
+                        <button id="showMemberList" class="icon-btn" title="参加メンバー"><i
+                                class="fa-solid fa-user-group"></i></button>
+                        <button id="showInviteLink" class="icon-btn" title="招待リンク"><i
+                                class="fa-solid fa-link"></i></button>
+                        <button id="showCalSettings" class="icon-btn" title="カレンダー設定"><i
+                                class="fa-solid fa-gear"></i></button>
+                    </div>
+                    <!-- Batch Mode Header Actions (hidden by default) -->
+                    <div id="batchHeaderActions" class="calendar-header-actions hidden"
+                        style="font-weight:bold; color:var(--accent);">
+                        <span id="batchCountHeader">0件選択中</span>
+                    </div>
+                </div>
+
+                <section class="calendar-card glass-panel">
+                    <div class="cal-header">
+                        <button id="prevMonth" class="icon-btn"><i class="fa-solid fa-chevron-left"></i></button>
+                        <h2 id="currentMonthYear"></h2>
+                        <button id="nextMonth" class="icon-btn"><i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                    <div class="cal-legend" id="calLegend">
+                        <span>
+                            <div class="dot dot-ok"></div> 終日OK!
+                        </span>
+                        <span>
+                            <div class="dot dot-partial"></div> 一部OK
+                        </span>
+                    </div>
+                    <div class="cal-grid">
+                        <div class="weekdays">
+                            <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
+                        </div>
+                        <div id="calendarDays" class="days"></div>
+                    </div>
+                </section>
+
+                <!-- ヒントバナー（Contextual Onboarding: NG未登録時に表示） -->
+                <div id="calHintBanner" class="cal-hint-banner hidden">
+                    <div class="cal-hint-content">
+                        <div class="cal-hint-icon">📅</div>
+                        <div class="cal-hint-text">
+                            <strong>日付をタップしてスケジュールを登録しよう</strong>
+                            <span>みんなの空き状況が一目でわかります</span>
+                        </div>
+                        <button id="calHintDismiss" class="cal-hint-close" aria-label="閉じる"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                </div>
+
+                <!-- Batch Banner -->
+                <div id="batchModeBanner" class="batch-banner glass-panel hidden"
+                    style="margin-top:15px; padding: 15px; display: flex; flex-direction: column; gap: 10px; position:relative; z-index:50;">
+                    <div class="batch-info" style="text-align:center; font-size:0.9rem; color:var(--text-sub);"><i
+                            class="fa-solid fa-clock"></i> <span id="batchTimeDisplay"></span>
+                        のNG日付を選択</div>
+                    <div class="batch-actions" style="display:flex; gap:10px; width:100%;">
+                        <button id="batchCancel" class="btn-ghost"
+                            style="flex:1; border:1px solid var(--glass-border); border-radius:8px;">キャンセル</button>
+                        <button id="batchApply" class="btn-primary" style="flex:1;">適用</button>
+                    </div>
+                </div>
+
+                <!-- 入力完了セクション -->
+                <div id="completionSection" class="completion-bar glass-panel" style="margin-top:12px;">
+                    <div id="completionStatus"></div>
+                    <button id="markCompleteBtn" class="btn-primary"
+                        style="width:100%; padding:12px; font-weight:bold; margin-top:8px;"></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== TAB: 通知 ====== -->
+        <div id="tabNotifications" class="tab-page">
+            <header class="app-header glass-panel"
+                style="display:flex; justify-content:space-between; align-items:center;">
+                <h1><i class="fa-solid fa-bell"></i> 通知</h1>
+                <button id="clearAllNotifsBtn"
+                    style="background:none; border:none; color:var(--text-sub); font-size:0.85rem; cursor:pointer; padding:6px 10px;">
+                    <i class="fa-solid fa-trash-can"></i> 全削除
+                </button>
+            </header>
+            <div class="notification-list" id="notificationList">
+                <div class="empty-state" id="emptyNotifications">
+                    <i class="fa-regular fa-bell-slash"></i>
+                    <p>まだ通知がありません</p>
+                    <span>カレンダーからOK日を選んで集合を提案してみましょう！</span>
+                </div>
+            </div>
+        </div>
+        <!-- 投票詳細モーダル -->
+        <div id="voteDetailModal" class="hidden"
+            style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; display:flex; align-items:center; justify-content:center;">
+            <div class="glass-panel"
+                style="max-width:500px; max-height:80vh; overflow-y:auto; padding:20px; border-radius:16px; margin:16px; width:90%;">
+                <div id="voteDetailContent"></div>
+                <button class="btn-ghost"
+                    onclick="document.getElementById('voteDetailModal').classList.add('hidden'); delete state._openVoteDetailId; document.querySelector('.tab-bar').classList.remove('tab-bar-hidden');"
+                    style="width:100%; margin-top:12px;">閉じる</button>
+            </div>
+        </div>
+
+        <!-- ====== TAB: マイページ ====== -->
+        <div id="tabMyPage" class="tab-page">
+            <header class="app-header glass-panel">
+                <h1><i class="fa-solid fa-user"></i> マイページ</h1>
+            </header>
+            <div class="mypage-content" style="padding: 0;">
+                <div class="profile-card glass-panel"
+                    style="display:flex; align-items:center; gap:12px; margin:16px; border-radius:12px;">
+                    <div class="avatar" id="myAvatar">A</div>
+                    <div class="profile-info" style="flex:1;">
+                        <h3 id="myName">ユーザー</h3>
+                        <span id="myProfileSub" class="profile-sub"></span>
+                    </div>
+                </div>
+
+                <div class="settings-list">
+                    <div class="settings-row settings-row-tap hidden" id="loginBtn">
+                        <span class="settings-label"><i class="fa-brands fa-google"
+                                style="margin-right:8px; color:var(--accent);"></i>Googleでログイン</span>
+                        <i class="fa-solid fa-chevron-right" style="color:var(--text-sub); font-size:0.75rem;"></i>
+                    </div>
+
+                    <div class="settings-row settings-row-tap" id="openConfirmedListBtn">
+                        <span class="settings-label"><i class="fa-solid fa-trophy"
+                                style="margin-right:8px; color:var(--text-sub);"></i>確定予約一覧</span>
+                        <i class="fa-solid fa-chevron-right" style="color:var(--text-sub); font-size:0.75rem;"></i>
+                    </div>
+
+                    <div class="settings-row settings-row-tap" id="openMyNgListBtn">
+                        <span class="settings-label"><i class="fa-solid fa-calendar-xmark"
+                                style="margin-right:8px; color:var(--text-sub);"></i>NG登録一覧</span>
+                        <i class="fa-solid fa-chevron-right" style="color:var(--text-sub); font-size:0.75rem;"></i>
+                    </div>
+
+                    <div class="settings-row settings-row-tap" id="openQaBtn">
+                        <span class="settings-label"><i class="fa-solid fa-circle-question"
+                                style="margin-right:8px; color:var(--text-sub);"></i>よくある質問</span>
+                        <i class="fa-solid fa-chevron-right" style="color:var(--text-sub); font-size:0.75rem;"></i>
+                    </div>
+
+                    <div class="settings-row settings-row-tap" id="openSettingsBtn">
+                        <span class="settings-label"><i class="fa-solid fa-gear"
+                                style="margin-right:8px; color:var(--text-sub);"></i>設定</span>
+                        <i class="fa-solid fa-chevron-right" style="color:var(--text-sub); font-size:0.75rem;"></i>
+                    </div>
+
+                    <div class="settings-row settings-row-tap" id="openPrivacyPolicyBtn">
+                        <span class="settings-label"><i class="fa-solid fa-shield-halved"
+                                style="margin-right:8px; color:var(--text-sub);"></i>プライバシーポリシー</span>
+                        <i class="fa-solid fa-chevron-right" style="color:var(--text-sub); font-size:0.75rem;"></i>
+                    </div>
+
+                    <div class="settings-row settings-row-tap" id="openTermsBtn">
+                        <span class="settings-label"><i class="fa-solid fa-file-contract"
+                                style="margin-right:8px; color:var(--text-sub);"></i>利用規約</span>
+                        <i class="fa-solid fa-chevron-right" style="color:var(--text-sub); font-size:0.75rem;"></i>
+                    </div>
+
+                    <div class="settings-row settings-row-tap hidden" id="logoutBtn">
+                        <span class="settings-label" style="color:var(--ng);"><i class="fa-solid fa-right-from-bracket"
+                                style="margin-right:8px;"></i>ログアウト</span>
+                    </div>
+
+                    <div class="settings-row settings-row-tap hidden" id="deleteAccountBtn">
+                        <span class="settings-label" style="color:var(--ng);"><i class="fa-solid fa-user-slash"
+                                style="margin-right:8px;"></i>アカウントを削除</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ====== 設定モーダル (X風) ====== -->
+        <div id="settingsPageModal" class="full-modal hidden">
+            <div class="full-modal-inner">
+                <div class="modal-top-bar">
+                    <button id="closeSettingsPage" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
+                    <h3 style="margin:0; font-weight:700;">アプリ設定</h3>
+                    <div style="width:36px"></div>
+                </div>
+                <div class="modal-scroll" style="padding:0; border-top: 1px solid var(--glass-border); gap:0;">
+
+                    <!-- テーマ -->
+                    <div class="sx-row">
+                        <span class="sx-label">テーマ</span>
+                        <div class="sx-theme-btns">
+                            <label class="sx-theme-opt">
+                                <input type="radio" name="settingsTheme" value="dark">
+                                <span>ダーク</span>
+                            </label>
+                            <label class="sx-theme-opt">
+                                <input type="radio" name="settingsTheme" value="light">
+                                <span>ライト</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="sx-divider"></div>
+
+                    <!-- 週の始まり -->
+                    <div class="sx-row">
+                        <span class="sx-label">週の始まり</span>
+                        <div class="sx-theme-btns">
+                            <label class="sx-theme-opt">
+                                <input type="radio" name="weekStart" value="sun" checked>
+                                <span>日曜日</span>
+                            </label>
+                            <label class="sx-theme-opt">
+                                <input type="radio" name="weekStart" value="mon">
+                                <span>月曜日</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="sx-divider"></div>
+
+                    <!-- 集合提案の通知 -->
+                    <div class="sx-row">
+                        <span class="sx-label">集合提案の通知</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="notifProposal" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="sx-divider"></div>
+
+                    <!-- 登録完了の通知（全員入力完了） -->
+                    <div class="sx-row">
+                        <span class="sx-label">登録完了の通知</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="notifCompletion" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="sx-divider"></div>
+
+                    <!-- 予定確定の通知（全員OK投票） -->
+                    <div class="sx-row">
+                        <span class="sx-label">予定確定の通知</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="notifConfirmed" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="sx-divider"></div>
+
+                    <!-- リマインダー通知 -->
+                    <div class="sx-row">
+                        <span class="sx-label">リマインダー通知</span>
+                        <select id="notifReminder" class="sx-select">
+                            <option value="off">通知しない</option>
+                            <option value="1h" selected>1時間前</option>
+                            <option value="2h">2時間前</option>
+                            <option value="3h">3時間前</option>
+                            <option value="1d">1日前</option>
+                        </select>
+                    </div>
+                    <div class="sx-divider"></div>
+
+                    <!-- Googleカレンダー読み込み（Google OAuth審査通過後に表示） -->
+                    <div id="googleCalSyncSection">
+                    <div class="sx-row">
+                        <span class="sx-label">Googleカレンダーを読み込む</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="googleCalSyncToggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div id="googleCalSyncStatus"
+                        style="padding:2px 16px 8px; font-size:0.72rem; color:var(--text-sub); display:none;">
+                    </div>
+                    <div class="sx-divider"></div>
+                    </div>
+
+                    <!-- アプリ更新 -->
+                    <div class="sx-row sx-row-tap" id="hardReloadBtnSettings">
+                        <span class="sx-label">アプリを最新版に更新<span id="updateRedDot" class="hidden"
+                                style="display:inline-block;width:8px;height:8px;background:#ef4444;border-radius:50%;margin-left:8px;vertical-align:middle;"></span></span>
+                        <i class="fa-solid fa-chevron-right"
+                            style="color:var(--text-sub); font-size:0.7rem; opacity:0.5;"></i>
+                    </div>
+                    <div class="sx-divider"></div>
+
+                    <!-- チュートリアル -->
+                    <div class="sx-row sx-row-tap" id="settingsShowTutorial">
+                        <span class="sx-label">チュートリアルを見る</span>
+                        <i class="fa-solid fa-chevron-right"
+                            style="color:var(--text-sub); font-size:0.7rem; opacity:0.5;"></i>
+                    </div>
+                    <div class="sx-divider"></div>
+
+                    <div class="sx-row sx-row-tap" id="settingsCommercialTransactionBtn">
+                        <span class="sx-label">特定商取引法に基づく表記</span>
+                        <i class="fa-solid fa-chevron-right"
+                            style="color:var(--text-sub); font-size:0.7rem; opacity:0.5;"></i>
+                    </div>
+                    <div class="sx-divider"></div>
+
+                    <!-- バージョン -->
+                    <div style="text-align:center; padding:24px 0 8px; color:var(--text-sub); font-size:0.8rem;">
+                        <p style="margin:0;">PitaDay <span id="settingsVersionLabel"></span></p>
+                        <p style="margin:4px 0 0; font-size:0.7rem; opacity:0.5;">© 2026 PitaDay</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ====== 広告バナー（タブバー上部に固定） ====== -->
+        <div id="adBannerFixed" class="ad-banner-fixed hidden"></div>
+
+    </div>
+
+    <!-- ====== タブバー（app-root内にflexboxで固定。position:fixedを使わないiOSキーボードバグ対策） ====== -->
+    <nav class="tab-bar">
+        <button class="tab-item active" data-tab="tabCalendar">
+            <i class="fa-solid fa-calendar-days"></i><span>カレンダー</span>
+        </button>
+        <button class="tab-item" data-tab="tabNotifications">
+            <i class="fa-solid fa-bell"></i><span>通知</span>
+            <span id="notifBadge" class="notif-badge hidden">0</span>
+        </button>
+        <button class="tab-item" data-tab="tabMyPage">
+            <i class="fa-solid fa-user"></i><span>マイページ</span>
+        </button>
+    </nav>
+
+    <!-- ====== overlay-modal群（app-root内に配置 = position:absoluteでapp-rootの100lvh範囲内に収まる） ====== -->
+
+    <!-- ====== 新規カレンダー作成モーダル ====== -->
+    <div id="createCalModal" class="overlay-modal hidden">
+        <div class="overlay-modal-box glass-panel">
+            <div class="modal-top-bar">
+                <h3><i class="fa-solid fa-plus-circle"></i> 新しいカレンダー</h3>
+                <div style="width:36px"></div>
+            </div>
+            <div class="form-stack">
+                <div class="form-field">
+                    <label>カレンダー名 <span class="required">*必須</span></label>
+                    <input type="text" id="newCalName" placeholder="例: 年末バンド練習" class="text-input" maxlength="30">
+                </div>
+                <div class="form-field">
+                    <label>アイコン <span style="font-size:0.75rem;color:var(--text-sub);font-weight:normal;">(任意)</span></label>
+                    <div class="icon-picker-row">
+                        <div class="icon-preview" id="createIconPreview">
+                            <i class="fa-solid fa-camera" style="font-size:1.2rem; opacity:0.5;"></i>
+                        </div>
+                        <button type="button" class="btn-ghost icon-picker-btn" id="createIconPickBtn">画像を選択</button>
+                        <button type="button" class="btn-ghost icon-picker-clear hidden" id="createIconClearBtn" title="削除"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                </div>
+                <div class="form-field">
+                    <label>タイプ</label>
+                    <div class="type-toggle">
+                        <button id="typeFull" class="type-btn active" data-type="full">
+                            <i class="fa-solid fa-calendar"></i> 月カレンダー
+                        </button>
+                        <button id="typeRange" class="type-btn" data-type="range">
+                            <i class="fa-solid fa-calendar-week"></i> 期間指定
+                        </button>
+                    </div>
+                </div>
+                <div id="rangeFields" class="range-fields hidden">
+                    <div class="form-field">
+                        <label>開始日</label>
+                        <input type="date" id="rangeStart" class="text-input">
+                    </div>
+                    <div class="form-field">
+                        <label>終了日</label>
+                        <input type="date" id="rangeEnd" class="text-input">
+                    </div>
+                </div>
+                <div class="form-field">
+                    <label>対象時間帯 <span
+                            style="font-size:0.75rem;color:var(--text-sub);font-weight:normal;">(深夜など活動しない時間を除く)</span></label>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <input type="time" id="calTimeStart" class="text-input" value="10:00">
+                        <span>〜</span>
+                        <input type="time" id="calTimeEnd" class="text-input" value="23:59">
+                    </div>
+                </div>
+
+                <div class="form-field" style="margin-top:10px;">
+                    <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                        <input type="checkbox" id="inheritNgCreate" checked
+                            style="width:16px; height:16px; accent-color:var(--ok);">
+                        <span style="font-size:0.9rem;">既存カレンダーのNG設定を引き継ぐ</span>
+                    </label>
+                </div>
+
+                <div id="createCalError" class="error-msg"></div>
+            </div>
+            <div class="modal-btns">
+                <button id="cancelCreateCal" class="btn-ghost">キャンセル</button>
+                <button id="confirmCreateCal" class="btn-primary" style="width:auto">作成する</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== 招待コード入力モーダル ====== -->
+    <div id="inputCodeModal" class="overlay-modal hidden">
+        <div class="overlay-modal-box glass-panel">
+            <div class="modal-top-bar">
+                <h3><i class="fa-solid fa-keyboard"></i> 招待コードで参加</h3>
+                <div style="width:36px"></div>
+            </div>
+            <p style="margin-bottom:15px; font-size:0.95rem;">共有された招待コードを入力またはペーストしてください。</p>
+            <div class="form-field">
+                <input type="text" id="joinInviteCodeInput" class="text-input" placeholder="例: A1B2C3D4"
+                    style="text-align:center; font-size:1.2rem; font-weight:bold; letter-spacing:2px; text-transform:uppercase;">
+            </div>
+            <div class="form-field" style="margin-top:10px;">
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                    <input type="checkbox" id="inheritNgJoin" checked
+                        style="width:16px; height:16px; accent-color:var(--ok);">
+                    <span style="font-size:0.9rem;">既存カレンダーのNG設定を引き継ぐ</span>
+                </label>
+            </div>
+            <div id="inputCodeError" class="error-msg"></div>
+            <div class="modal-btns" style="margin-top:20px;">
+                <button id="cancelInputCode" class="btn-ghost">キャンセル</button>
+                <button id="confirmInputCode" class="btn-primary" style="width:auto">参加する</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== 招待リンクモーダル ====== -->
+    <div id="inviteModal" class="overlay-modal hidden">
+        <div class="overlay-modal-box glass-panel">
+            <div class="modal-top-bar">
+                <h3><i class="fa-solid fa-link"></i> 招待リンク</h3>
+                <div style="width:36px"></div>
+            </div>
+            <p>このリンクを共有してメンバーを招待しましょう！</p>
+            <div class="invite-link-box">
+                <input type="text" id="inviteLinkText" class="text-input" readonly>
+                <button id="copyInviteLink" class="btn-primary sm"><i class="fa-solid fa-copy"></i></button>
+            </div>
+            <div style="margin-top:15px; padding-top:10px; border-top:1px solid var(--glass-border);">
+                <p style="font-size:0.85rem; color:var(--text-sub); margin-bottom:5px;">
+                    アプリで直接参加する場合は、以下の招待コードを入力してもらいます
+                </p>
+                <div class="invite-link-box" style="margin-top:5px;">
+                    <input type="text" id="inviteCodeText" class="text-input"
+                        style="font-weight:bold; letter-spacing:1px; text-align:center;" readonly>
+                    <button id="copyInviteCode" class="btn-primary sm"><i class="fa-solid fa-copy"></i></button>
+                </div>
+            </div>
+            <div class="modal-btns" style="margin-top:20px;">
+                <button id="closeInviteModal2" class="btn-ghost" style="width:100%;">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== カレンダー設定モーダル ====== -->
+    <div id="calSettingsModal" class="overlay-modal hidden">
+        <div class="overlay-modal-box glass-panel">
+            <div class="modal-top-bar">
+                <h3><i class="fa-solid fa-gear"></i> カレンダー設定</h3>
+                <div style="width:36px"></div>
+            </div>
+            <div class="form-stack">
+                <div class="form-field">
+                    <label>カレンダー名</label>
+                    <input type="text" id="editCalName" class="text-input" maxlength="30">
+                </div>
+                <div class="form-field" id="editIconField">
+                    <label>アイコン</label>
+                    <div class="icon-picker-row">
+                        <div class="icon-preview" id="editIconPreview">
+                            <i class="fa-solid fa-camera" style="font-size:1.2rem; opacity:0.5;"></i>
+                        </div>
+                        <button type="button" class="btn-ghost icon-picker-btn" id="editIconPickBtn">変更</button>
+                        <button type="button" class="btn-ghost icon-picker-clear hidden" id="editIconClearBtn" title="削除"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                </div>
+                <div class="form-field">
+                    <label>対象時間帯</label>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <input type="time" id="editCalTimeStart" class="text-input">
+                        <span>〜</span>
+                        <input type="time" id="editCalTimeEnd" class="text-input">
+                    </div>
+                </div>
+                <div class="form-field">
+                    <label>カレンダータイプ</label>
+                    <div class="radio-group" style="display:flex; gap:15px; margin-bottom:5px;">
+                        <label style="display:flex; align-items:center; gap:5px; font-weight:normal;">
+                            <input type="radio" name="editCalType" value="full"> 月カレンダー
+                        </label>
+                        <label style="display:flex; align-items:center; gap:5px; font-weight:normal;">
+                            <input type="radio" name="editCalType" value="range"> 期間指定
+                        </label>
+                    </div>
+                </div>
+                <div id="editRangeInputs" class="form-field hidden">
+                    <label>対象期間</label>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <input type="date" id="editCalRangeStart" class="text-input">
+                        <span>〜</span>
+                        <input type="date" id="editCalRangeEnd" class="text-input">
+                    </div>
+                </div>
+                <div id="editCalError" class="error-msg"></div>
+            </div>
+
+            <div class="danger-zone"
+                style="margin-top:20px; padding-top:20px; border-top:1px solid var(--glass-border); text-align:center;">
+                <button id="deleteCalBtn" class="btn-ghost"
+                    style="color:var(--ng); border:2px solid var(--ng); width:100%; font-weight:600;"><i
+                        class="fa-solid fa-trash-can"></i> カレンダーを削除</button>
+                <button id="leaveCalBtn" class="btn-ghost"
+                    style="color:var(--partial); border:2px solid var(--partial); width:100%; font-weight:600; display:none;"><i
+                        class="fa-solid fa-person-walking-arrow-right"></i> カレンダーから退出</button>
+            </div>
+
+            <div class="modal-btns">
+                <button id="cancelCalSettings" class="btn-ghost">キャンセル</button>
+                <button id="saveCalSettings" class="btn-primary" style="width:auto">保存する</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== メンバー一覧モーダル ====== -->
+    <div id="memberListModal" class="overlay-modal hidden">
+        <div class="overlay-modal-box glass-panel" style="max-height: 70vh; overflow-y: auto; margin-bottom: 70px;">
+            <div class="modal-top-bar">
+                <h3><i class="fa-solid fa-user-group"></i> 参加メンバー</h3>
+                <div style="width:36px"></div>
+            </div>
+
+            <div class="modal-body" style="padding: 15px 0;">
+                <ul id="memberListUl" style="list-style: none; padding: 0; margin: 0;">
+                    <!-- JSでメンバー一覧を生成 -->
+                </ul>
+            </div>
+            <div class="modal-btns" style="margin-top:12px; padding-bottom:20px;">
+                <button id="closeMemberListModal2" class="btn-ghost"
+                    style="width: 100%; border: 1px solid var(--glass-border); border-radius: 8px; padding: 10px;">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    </div><!-- /app-root -->
+
+    <!-- ====== 日付詳細モーダル ====== -->
+    <div id="dateModal" class="full-modal hidden">
+        <div class="full-modal-inner">
+            <div class="modal-top-bar">
+                <button id="closeDateModal" class="icon-btn"><i class="fa-solid fa-chevron-left"></i></button>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <button id="prevDay" class="icon-btn" style="font-size:0.9rem;"><i
+                            class="fa-solid fa-chevron-left"></i></button>
+                    <h3 id="dateModalTitle" style="margin:0; white-space:nowrap;">--</h3>
+                    <button id="nextDay" class="icon-btn" style="font-size:0.9rem;"><i
+                            class="fa-solid fa-chevron-right"></i></button>
+                </div>
+                <div style="width:36px"></div>
+            </div>
+            <div class="modal-scroll">
+                <!-- 初回ヒント（日付モーダルを初めて開いた時に1回だけ表示） -->
+                <div id="dateModalHint" class="date-modal-hint hidden">
+                    <i class="fa-solid fa-lightbulb" style="color:var(--partial); flex-shrink:0;"></i>
+                    <span>終日NGか、時間帯を指定してスケジュールを登録できます</span>
+                </div>
+                <div class="ok-display" id="okTimesArea"></div>
+
+                <div class="ng-section">
+                    <h4>マイスケジュール</h4>
+
+                    <div id="myNgSummary"
+                        style="margin-top:8px; margin-bottom:12px; font-weight:bold; font-size:1.05rem; display:flex; flex-direction:column; padding:8px 12px; border-radius:8px; border:1px solid var(--glass-border); min-height:0;">
+                    </div>
+
+                    <div class="ng-tabs">
+                        <button id="modeAllDay" class="ng-tab active"><i
+                                class="fa-solid fa-calendar-xmark"></i><span>終日NG</span></button>
+                        <button id="modeDateToTime" class="ng-tab"><i
+                                class="fa-solid fa-clock"></i><span>時間指定</span></button>
+                    </div>
+
+                    <div id="allDayPanel" class="mode-panel">
+                        <button id="toggleAllDayNgBtn" class="btn-primary"
+                            style="background:var(--accent); width:100%;"><i
+                                class="fa-solid fa-ban"></i><span>終日NGにする</span></button>
+                    </div>
+                    <div id="dateToTimePanel" class="mode-panel hidden">
+                        <button id="cancelTimeNgBtn" class="btn-primary hidden"
+                            style="background:var(--ng); width:100%; margin-bottom:8px;"><i
+                                class="fa-solid fa-times-circle"></i><span>時間帯設定をキャンセル</span></button>
+                        <button id="openTimeNgModalBtn" class="btn-primary"
+                            style="background:var(--accent); width:100%;"><i
+                                class="fa-regular fa-clock"></i><span>スケジュールを設定</span></button>
+                    </div>
+
+                    <!-- 詳細設定（折りたたみ） -->
+                    <details id="scheduleOptionsDetails" style="margin-top:12px;">
+                        <summary style="cursor:pointer; font-size:0.85rem; color:var(--text-sub); padding:8px 0; user-select:none; list-style:none; display:flex; align-items:center; gap:6px;">
+                            <i class="fa-solid fa-chevron-right" style="font-size:0.65rem; transition:transform 0.2s;"></i>
+                            詳細設定
+                        </summary>
+                        <div style="padding:8px 0 4px; display:flex; flex-direction:column; gap:8px;">
+                            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.85rem; padding:4px 0;">
+                                <input type="checkbox" id="syncOtherCalsCheckbox" checked
+                                    style="width:16px; height:16px; accent-color:var(--accent)">
+                                他の参加カレンダーにも一括設定
+                            </label>
+                            <label id="repeatNgLabel"
+                                style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.85rem; padding:4px 0;">
+                                <input type="checkbox" id="repeatNgCheckbox"
+                                    style="width:16px; height:16px; accent-color:var(--accent);">
+                                <span>🔁 <span id="repeatNgText">毎週○曜日に繰り返す</span></span>
+                            </label>
+                            <div id="batchBtnArea" style="margin-top:4px;">
+                                <button id="batchAllDayBtn" class="btn-ghost"
+                                    style="width:100%; border:1.5px solid var(--accent); border-radius:10px; font-size:0.85rem; color:var(--accent); background:rgba(66,133,244,0.08); padding:10px 0;">
+                                    <i class="fa-solid fa-calendar-plus" style="margin-right:4px;"></i> 他の日にも終日NGをコピー
+                                </button>
+                                <button id="batchTimeNgBtn" class="btn-ghost hidden"
+                                    style="width:100%; border:1.5px solid var(--accent); border-radius:10px; font-size:0.85rem; color:var(--accent); background:rgba(66,133,244,0.08); padding:10px 0;">
+                                    <i class="fa-solid fa-calendar-plus" style="margin-right:4px;"></i> 他の日にもスケジュールをコピー
+                                </button>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <hr style="border-color:rgba(255,255,255,0.1); margin:15px 0;">
+
+                <!-- コメントセクション -->
+                <div class="comment-section" style="margin-bottom:15px;">
+                    <h4 style="margin-bottom:8px;"><i class="fa-solid fa-comment" style="margin-right:4px;"></i>コメント
+                    </h4>
+                    <div id="dateCommentsArea" style="margin-bottom:10px;"></div>
+                    <input type="text" id="dateCommentInput" class="text-input" placeholder="メモや理由を入力..." maxlength="50"
+                        style="width:100%; font-size:0.9rem; padding:10px 12px; box-sizing:border-box;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+                        <label
+                            style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.78rem; color:var(--text-sub); white-space:nowrap;">
+                            <input type="checkbox" id="syncCommentCheckbox" checked
+                                style="width:14px; height:14px; accent-color:var(--accent);">
+                            他カレンダーにも同期
+                        </label>
+                        <button id="saveDateCommentBtn"
+                            style="padding:10px 20px; font-size:0.85rem; border-radius:8px; background:var(--accent); color:#fff; border:none; cursor:pointer; white-space:nowrap;">保存</button>
+                    </div>
+                </div>
+
+                <hr style="border-color:rgba(255,255,255,0.1); margin:15px 0;">
+
+                <!-- 提案セクション -->
+                <div style="margin-bottom:15px;">
+                    <button id="toggleProposeBtn" class="btn-ghost"
+                        style="width:100%; border:2px solid var(--glass-border); padding:14px; font-size:0.95rem;"><i
+                            class="fa-solid fa-bullhorn"></i>
+                        この日に集合を提案する</button>
+                    <div id="proposalForm" class="hidden"
+                        style="margin-top:10px; padding:12px; border-radius:8px; background:rgba(255,255,255,0.05);">
+                        <div class="time-row" style="margin-bottom:10px;">
+                            <div class="form-field"><label>開始 <span
+                                        style="font-size:0.7rem;color:var(--text-sub);">*必須</span></label><input
+                                    type="time" id="proposeStartTime" value="19:00"></div>
+                            <span class="sep">〜</span>
+                            <div class="form-field"><label>終了 <span
+                                        style="font-size:0.7rem;color:var(--text-sub);">任意</span></label><input
+                                    type="time" id="proposeEndTime" value=""></div>
+                        </div>
+                        <button id="sendProposalBtn" class="btn-primary" style="width:100%; background:var(--ok);"><i
+                                class="fa-regular fa-paper-plane"></i>
+                            みんなに通知して提案する</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== 時間帯設定モーダル（NG/OK両対応） ====== -->
+    <div id="timeModal" class="overlay-modal hidden">
+        <div class="overlay-modal-box glass-panel">
+            <div class="modal-top-bar">
+                <h3 id="timeModalTitle">時間指定NGの設定</h3>
+            </div>
+
+            <!-- OK/NG切り替えトグル -->
+            <div id="timeModalModeToggle" style="display:flex; gap:0; margin-bottom:12px; border-radius:10px; overflow:hidden; border:1.5px solid var(--glass-border);">
+                <button id="timeModalModeNG" type="button" style="flex:1; padding:10px 0; font-size:0.88rem; font-weight:600; border:none; cursor:pointer; transition:all 0.2s; background:var(--ng); color:#fff;">
+                    <i class="fa-solid fa-xmark"></i> NGを入力
+                </button>
+                <button id="timeModalModeOK" type="button" style="flex:1; padding:10px 0; font-size:0.88rem; font-weight:600; border:none; cursor:pointer; transition:all 0.2s; background:transparent; color:var(--text-sub);">
+                    <i class="fa-solid fa-check"></i> OKを入力
+                </button>
+            </div>
+
+
+            <div id="timeModalListBox"
+                style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.1); margin-bottom:15px;">
+                <p
+                    style="font-size:0.95rem; font-weight:bold; margin-bottom:8px; color:var(--text-main); text-align:center;">
+                    <span id="modalDateDisplay" class="accent-text">--</span> <span id="timeModalListLabel">のNG時間帯</span>
+                </p>
+                <div id="existingTimeNgs" style="display:flex; flex-direction:column; gap:8px;">
+                    <!-- ここに既存の時間帯がリスト表示される -->
+                </div>
+            </div>
+
+            <p id="timeModalAddLabel" style="font-size:0.85rem; margin-bottom:6px; color:var(--text-sub);">
+                時間帯を追加</p>
+            <div class="time-row" style="margin-bottom:8px;">
+                <div class="form-field"><label>開始</label><input type="time" id="startTime" value="19:00"></div>
+                <span class="sep">〜</span>
+                <div class="form-field"><label>終了</label><input type="time" id="endTime" value="22:00"></div>
+            </div>
+            <div id="timeModalError" class="error-msg"></div>
+            <button id="addTimeNgBtn" class="btn-primary" style="width:100%;"><i class="fa-solid fa-plus"></i>
+                <span id="addTimeBtnText">時間帯を追加</span></button>
+
+            <div class="modal-btns" style="margin-top:20px;">
+                <button id="cancelTimeModal" class="btn-ghost"
+                    style="border:1px solid rgba(255,255,255,0.2);">キャンセル</button>
+                <button id="saveTimeModal" class="btn-ghost"
+                    style="width:auto; border:1px solid var(--text-sub); color:var(--text-sub);">設定を保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== 投票詳細モーダル ====== -->
+    <div id="voteDetailModal" class="overlay-modal hidden">
+        <div class="overlay-modal-box glass-panel" style="max-height: 80vh; overflow-y: auto;">
+            <div class="modal-top-bar">
+                <h3><i class="fa-solid fa-chart-bar"></i> 投票詳細</h3>
+                <div style="width:36px"></div>
+            </div>
+            <div id="voteDetailHeader" style="text-align:center; margin-bottom:15px; font-size:0.95rem;"></div>
+            <div id="voteDetailBody" style="padding: 10px 0;"></div>
+            <div id="voteDetailAction" style="margin-top:15px;"></div>
+            <div class="modal-btns" style="margin-top:20px;">
+                <button id="closeVoteDetailModal" class="btn-ghost" style="width: 100%;">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- ====== Q&A画面 ====== -->
+    <div id="qaModal" class="full-modal hidden">
+        <div class="full-modal-inner">
+            <div class="modal-top-bar">
+                <button id="closeQaModal" class="icon-btn"><i class="fa-solid fa-chevron-left"></i></button>
+                <h3>よくある質問</h3>
+                <div style="width:36px"></div>
+            </div>
+            <div class="modal-scroll" style="padding: 16px;">
+                <details class="qa-item">
+                    <summary>カレンダーごとに表示名を変えられる？</summary>
+                    <p>メンバーリストを開き、自分の名前の横にある<b>ペンアイコン</b>をタップすると、そのカレンダーでの表示名を変更できます。カレンダーごとに別の名前を設定できます。</p>
+                </details>
+
+                <details class="qa-item">
+                    <summary>「登録完了」って何？</summary>
+                    <p>その月のNG登録が終わったことを他のメンバーに伝える機能です。カレンダー画面の下部にある完了ボタンから操作できます。<b>全員が完了すると通知が届きます。</b></p>
+                </details>
+
+                <details class="qa-item">
+                    <summary>月が変わると登録完了がリセットされる？</summary>
+                    <p>はい、月が変わると自動的に未完了に戻ります。毎月NG登録後に完了ボタンを押してください。</p>
+                </details>
+
+                <details class="qa-item">
+                    <summary>NGを複数の日に一括登録したい</summary>
+                    <p>日付をタップしてNG設定後、「<b>他の日にも設定する</b>」ボタンから一括登録できます。終日NG・時間指定NG両方に対応しています。</p>
+                </details>
+
+                <details class="qa-item">
+                    <summary>他のカレンダーにも同じNGを反映できる？</summary>
+                    <p>NG登録時に「他のカレンダーにも一括設定しますか？」の確認が表示されます。OKを選ぶと参加中の全カレンダーに同じ設定が反映されます。</p>
+                </details>
+
+                <details class="qa-item">
+                    <summary>週を月曜始まりにしたい</summary>
+                    <p>マイページ →「<b>設定</b>」→「週の始まり」で日曜日/月曜日を切り替えられます。</p>
+                </details>
+
+                <details class="qa-item">
+                    <summary>期間指定カレンダーって何？</summary>
+                    <p>カレンダー作成時に「<b>期間指定</b>」を選ぶと、特定の期間だけを対象にしたカレンダーを作れます。</p>
+                    <p>例えば「年末年始 12/25〜1/4 の間でどこが空いてる？」のように、<b>期間を絞って日程調整したい</b>ときに便利です。</p>
+                    <p>通常の月表示カレンダーとの違い：</p>
+                    <ul style="padding-left:20px; margin:8px 0;">
+                        <li><b>月表示</b>：1ヶ月単位でNGを登録し、空き日を見つける</li>
+                        <li><b>期間指定</b>：指定した期間だけが表示され、短期間の日程調整に最適</li>
+                    </ul>
+                </details>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== NG登録一覧モーダル ====== -->
+    <div id="myNgListModal" class="full-modal hidden">
+        <div class="full-modal-inner">
+            <div class="modal-top-bar">
+                <button id="closeMyNgListModal" class="icon-btn"><i class="fa-solid fa-chevron-left"></i></button>
+                <h3>NG登録一覧</h3>
+                <div style="width:36px"></div>
+            </div>
+            <div class="modal-scroll" style="padding: 0;">
+                <div id="myNgListContent">
+                    <!-- JSで動的に生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== 確定予約一覧モーダル ====== -->
+    <div id="confirmedListModal" class="full-modal hidden">
+        <div class="full-modal-inner">
+            <div class="modal-top-bar">
+                <button id="closeConfirmedListModal" class="icon-btn"><i class="fa-solid fa-chevron-left"></i></button>
+                <h3>確定予約一覧</h3>
+                <div style="width:36px"></div>
+            </div>
+            <div class="modal-scroll" style="padding: 0;">
+                <div id="confirmedListContent">
+                    <!-- JSで動的に生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== プライバシーポリシーモーダル ====== -->
+    <div id="privacyPolicyModal" class="full-modal hidden"
+        style="z-index:9999; top:0; left:0; width:100%; height:100%;">
+        <div class="full-modal-inner">
+            <div class="modal-top-bar">
+                <button id="closePrivacyPolicyModal" class="icon-btn"><i class="fa-solid fa-chevron-left"></i></button>
+                <h3>プライバシーポリシー</h3>
+                <div style="width:36px"></div>
+            </div>
+            <div class="modal-scroll" style="padding: 16px;">
+                <div class="legal-content">
+                    <div class="legal-section"><h3>公開デモのデータについて</h3><p>この公開デモの入力内容は、お使いのブラウザのlocalStorageに保存されます。Firebaseや運用中のPitaDayには送信しません。個人情報・実際の予定は入力しないでください。初回の画面読み込みにはFirebase SDK、Google Fonts、Font Awesomeの外部配信サービスを利用します。</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== 利用規約モーダル ====== -->
+    <div id="termsModal" class="full-modal hidden" style="z-index:9999; top:0; left:0; width:100%; height:100%;">
+        <div class="full-modal-inner">
+            <div class="modal-top-bar">
+                <button id="closeTermsModal" class="icon-btn"><i class="fa-solid fa-chevron-left"></i></button>
+                <h3>利用規約</h3>
+                <div style="width:36px"></div>
+            </div>
+            <div class="modal-scroll" style="padding: 16px;">
+                <div class="legal-content">
+                    <div class="legal-section"><h3>公開デモの利用について</h3><p>この画面はPitaDayの制作実績を紹介するデモです。他の人との共有、アカウント作成、通知、Googleカレンダー連携、画像アップロードは利用できません。運用中のサービスの利用規約とは別のものです。</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== 特定商取引法に基づく表記モーダル ====== -->
+    <div id="commercialTransactionModal" class="full-modal hidden"
+        style="z-index:9999; top:0; left:0; width:100%; height:100%;">
+        <div class="full-modal-inner">
+            <div class="modal-top-bar">
+                <button id="closeCommercialTransactionModal" class="icon-btn"><i
+                        class="fa-solid fa-chevron-left"></i></button>
+                <h3>特定商取引法に基づく表記</h3>
+                <div style="width:36px"></div>
+            </div>
+            <div class="modal-scroll" style="padding: 16px;">
+                <div class="legal-content">
+                    <div class="legal-section"><h3>公開デモについて</h3><p>この公開デモでは有料サービス・販売・決済を提供していません。</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 公開デモはFirebaseへ接続しない -->
+    <script type="module">
+        import { firebaseConfig, demoMode, enablePush } from './config.js';
+        if (!demoMode) {
+            const [{ initializeApp }, { getFirestore }, { getAuth, GoogleAuthProvider }, { getStorage }] = await Promise.all([
+                import('https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js'),
+                import('https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js'),
+                import('https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js'),
+                import('https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js')
+            ]);
+            const app = initializeApp(firebaseConfig);
+            window.db = getFirestore(app);
+            window.auth = getAuth(app);
+            window.googleProvider = new GoogleAuthProvider();
+            window.firebaseStorage = getStorage(app);
+            if (enablePush) {
+                const { getMessaging, getToken, onMessage } = await import('https://www.gstatic.com/firebasejs/10.9.0/firebase-messaging.js');
+                try {
+                    window.fcmMessaging = getMessaging(app);
+                    window.fcmGetToken = getToken;
+                    window.fcmOnMessage = onMessage;
+                } catch (error) { console.info('この環境では通知を利用できません', error); }
+            }
+        }
+    </script>
+
+
+
+    <!-- Tutorial Overlay -->
+    <div id="tutorialOverlay">
+        <div id="tutorialContent"></div>
+    </div>
+
+    <script src="tutorial2.js"></script>
+    <script type="module" src="app.js"></script>
+    <script>
+        // Register Service Worker for PWA + FCM
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').then((registration) => {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, (err) => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    </script>
+</body>
+
+</html>
